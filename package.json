@@ -1,0 +1,43 @@
+{
+  "name": "blockwright-tools",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Blockwright: independent tools for Minecraft creators. First tool: Character Builder (player skins + Bedrock custom entities).",
+  "license": "UNLICENSED",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "workspaces": [
+    "packages/shared",
+    "packages/minecraft-skin",
+    "packages/bedrock-export",
+    "apps/api",
+    "apps/web"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -n WEB,API,WORKER -c green,cyan,magenta \"npm run dev:web\" \"npm run dev:api\" \"npm run dev:worker\"",
+    "dev:web": "npm run dev -w apps/web",
+    "dev:api": "npm run dev -w apps/api",
+    "dev:worker": "node scripts/worker.mjs dev",
+    "build:packages": "npm run build -w packages/shared && npm run build -w packages/minecraft-skin && npm run build -w packages/bedrock-export",
+    "build": "npm run build:packages && npm run build -w apps/api && npm run build -w apps/web",
+    "start": "npm run start -w apps/api",
+    "typecheck": "npm run build:packages && npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm run test --workspaces --if-present",
+    "test:e2e": "playwright test",
+    "test:python": "node scripts/worker.mjs test",
+    "verify:exports": "node scripts/verify-exports.mjs",
+    "fixtures": "node scripts/generate-fixtures.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "concurrently": "10.0.6",
+    "prettier": "3.9.10",
+    "typescript": "6.0.3",
+    "vitest": "5.0.5"
+  }
+}

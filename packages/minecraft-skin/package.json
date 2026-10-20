@@ -1,0 +1,29 @@
+{
+  "name": "@blockwright/minecraft-skin",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Standard 64x64 Minecraft player-skin UV atlas, validation, PNG codec, symmetry, templates and photo projection.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b && tsc -p tsconfig.test.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@blockwright/shared": "0.1.0"
+  },
+  "devDependencies": {
+    "skinview3d": "3.4.2",
+    "three": "0.186.1"
+  }
+}

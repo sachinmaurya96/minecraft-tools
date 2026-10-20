@@ -1,0 +1,39 @@
+# dependencies
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# builds
+dist/
+build/
+*.tsbuildinfo
+coverage/
+
+# local env (keep the .env.example files)
+.env
+.env.*
+!.env.example
+
+# runtime data (uploads, projects, exports, job scratch) — never commit
+data/
+apps/api/data/
+services/ai-worker/data/
+
+# model weights / third-party model checkouts — downloaded per README, never committed
+services/ai-worker/models/
+
+# test output
+test-results/
+playwright-report/
+blob-report/
+fixtures/generated/
+
+# OS / editor
+.DS_Store
+*.log
+.idea/
+.vscode/*
+!.vscode/extensions.json
