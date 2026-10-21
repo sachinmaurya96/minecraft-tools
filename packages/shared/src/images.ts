@@ -24,9 +24,14 @@ export const CropRectSchema = z.object({
 });
 export type CropRect = z.infer<typeof CropRectSchema>;
 
+export const ImagePurposeSchema = z.enum(['reference', 'composite']);
+export type ImagePurpose = z.infer<typeof ImagePurposeSchema>;
+
 /** Metadata the server returns for an uploaded, validated and normalized image asset. */
 export const ImageAssetSchema = z.object({
   id: z.string(),
+  /** `reference` photos are downscaled to <= 2048 px; `composite` (AI input) keeps up to 4096 px as PNG. */
+  purpose: ImagePurposeSchema,
   originalName: z.string().max(200),
   originalMime: UploadMimeSchema,
   mime: NormalizedMimeSchema,

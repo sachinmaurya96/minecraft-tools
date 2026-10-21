@@ -1,0 +1,153 @@
+@import 'tailwindcss';
+@import '@fontsource/pixelify-sans/400.css';
+@import '@fontsource/pixelify-sans/600.css';
+
+/* Original, block-inspired palette (no Mojang assets). Text/background pairs meet WCAG AA. */
+@theme {
+  --font-pixel: 'Pixelify Sans', ui-monospace, 'SFMono-Regular', monospace;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  --color-night: #12151c;
+  --color-night-2: #171b25;
+  --color-panel: #1c2130;
+  --color-panel-2: #252c3d;
+  --color-edge: #3a4560;
+  --color-shadow: #0a0c11;
+  --color-ink: #eef1f5;
+  --color-muted: #a9b2c3;
+  --color-grass: #5fb83f;
+  --color-grass-dark: #3d7f27;
+  --color-dirt: #8b5a3c;
+  --color-dirt-dark: #5e3b26;
+  --color-gold: #f2c14e;
+  --color-diamond: #4fd1d9;
+  --color-redstone: #e5484d;
+  --color-lapis: #5b8def;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-night text-ink font-sans antialiased;
+    min-height: 100dvh;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-pixel tracking-wide;
+  }
+  a {
+    @apply text-diamond underline-offset-4 hover:underline;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-diamond);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--color-grass) 55%, transparent);
+  }
+  canvas {
+    image-rendering: pixelated;
+  }
+}
+
+@layer components {
+  .px-panel {
+    background: var(--color-panel);
+    border: 2px solid var(--color-shadow);
+    box-shadow:
+      inset 2px 2px 0 var(--color-edge),
+      inset -2px -2px 0 #141824;
+  }
+  .px-inset {
+    background: var(--color-night-2);
+    border: 2px solid var(--color-shadow);
+    box-shadow: inset 2px 2px 0 #0d1016;
+  }
+  .px-btn {
+    @apply font-pixel inline-flex items-center justify-center gap-2 px-4 py-2 text-base leading-tight select-none no-underline;
+    border: 2px solid var(--color-shadow);
+    box-shadow:
+      inset 0 -4px 0 rgb(0 0 0 / 0.35),
+      inset 0 2px 0 rgb(255 255 255 / 0.22);
+    transition: filter 80ms ease, transform 80ms ease;
+  }
+  .px-btn:hover:not(:disabled) {
+    filter: brightness(1.08);
+    text-decoration: none;
+  }
+  .px-btn:active:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow:
+      inset 0 -2px 0 rgb(0 0 0 / 0.35),
+      inset 0 2px 0 rgb(255 255 255 / 0.18);
+  }
+  .px-btn:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+  .px-btn-primary {
+    background: var(--color-grass-dark);
+    color: #fff;
+  }
+  .px-btn-secondary {
+    background: var(--color-panel-2);
+    color: var(--color-ink);
+  }
+  .px-btn-danger {
+    background: #a62f33;
+    color: #fff;
+  }
+  .px-btn-ghost {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    color: var(--color-ink);
+  }
+  .px-btn-sm {
+    @apply px-2.5 py-1 text-sm;
+  }
+  .px-input {
+    @apply w-full px-2 py-1.5 text-ink;
+    background: var(--color-night-2);
+    border: 2px solid var(--color-shadow);
+    box-shadow: inset 2px 2px 0 #0d1016;
+  }
+  .px-label {
+    @apply mb-1 block text-sm font-medium text-muted;
+  }
+  .grass-strip {
+    height: 12px;
+    background:
+      linear-gradient(90deg, transparent 0 8px, rgb(0 0 0 / 0.12) 8px 12px, transparent 12px 20px) 0 0 / 20px 6px repeat-x,
+      linear-gradient(var(--color-grass) 0 6px, var(--color-dirt) 6px 12px);
+    image-rendering: pixelated;
+  }
+  .checker {
+    background-color: #2a3042;
+    background-image:
+      linear-gradient(45deg, #343b50 25%, transparent 25%),
+      linear-gradient(-45deg, #343b50 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #343b50 75%),
+      linear-gradient(-45deg, transparent 75%, #343b50 75%);
+    background-size: 16px 16px;
+    background-position:
+      0 0,
+      0 8px,
+      8px -8px,
+      -8px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

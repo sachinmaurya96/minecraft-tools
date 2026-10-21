@@ -87,6 +87,20 @@ export function validateSkinImage(img: RgbaImage, model: SkinModel): ValidationR
       `${stats.overlaySemiTransparentPixels} outer-layer pixel(s) are semi-transparent; editions and versions may render partial alpha differently.`,
     );
   }
+  report.check('not-fully-opaque');
+  let fullyOpaque = true;
+  for (let i = 3; i < img.data.length; i += 4) {
+    if (img.data[i] !== 255) {
+      fullyOpaque = false;
+      break;
+    }
+  }
+  if (fullyOpaque) {
+    report.warn(
+      'FULLY_OPAQUE',
+      'Every pixel of the image is opaque, including unused areas. Some launchers and viewers treat a fully opaque skin as an old-style skin and hide its outer layer; leave unused areas transparent.',
+    );
+  }
   report.info('OVERLAY_PIXELS', `${stats.overlayOpaquePixels} opaque outer-layer pixel(s).`);
   report.check('model-arm-width');
   report.info('MODEL', model === 'slim' ? 'Slim (3-pixel arms) model.' : 'Classic (4-pixel arms) model.');

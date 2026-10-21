@@ -44,19 +44,21 @@ function bitmapPaint(img: RgbaImage): FacePaint {
   return { kind: 'pixels', width: img.width, height: img.height, rgba: bytesToBase64(img.data) };
 }
 
-/** 8x8 front-of-head bitmap with eyes and a fringe (natural orientation: as seen from the front). */
+/** Front-of-head bitmap (natural orientation: as seen from the front): fringe, dark eyes, cheeks. */
 function faceBitmap(skin: string, hair: string, eye: string, w = 8, h = 8): RgbaImage {
   const img = createImage(w, h, hexToRgba(skin));
   const hairC = hexToRgba(hair);
   const eyeC = hexToRgba(eye);
-  const white: [number, number, number, number] = [240, 240, 240, 255];
+  const cheek: [number, number, number, number] = [220, 140, 130, 255];
   for (let x = 0; x < w; x++) setPixel(img, x, 0, hairC);
-  for (let x = 0; x < w; x++) if (x < 2 || x > w - 3) setPixel(img, x, 1, hairC);
-  const ey = Math.floor(h / 2);
-  setPixel(img, 1, ey, white);
-  setPixel(img, 2, ey, eyeC);
-  setPixel(img, w - 3, ey, eyeC);
-  setPixel(img, w - 2, ey, white);
+  for (let x = 0; x < w - 2; x++) setPixel(img, x, 1, hairC);
+  const ey = Math.floor(h / 2) - 1;
+  for (const x of [2, w - 3]) {
+    setPixel(img, x, ey, eyeC);
+    setPixel(img, x, ey + 1, eyeC);
+  }
+  setPixel(img, 1, ey + 2, cheek);
+  setPixel(img, w - 2, ey + 2, cheek);
   return img;
 }
 
@@ -65,7 +67,9 @@ export const HUMANOID_TEMPLATE: EntityTemplate = {
   name: 'Blocky humanoid',
   description: 'Head, torso, two arms and two legs. Player-like proportions (32 px / 2 blocks tall).',
   build() {
-    const skin = '#c9a27e';
+    const skin = '#d8a483';
+    const shirt = '#d27b2c';
+    const hair = '#3b2a4a';
     return {
       bones: [
         bone('body', 'body', [0, 24, 0]),
@@ -76,14 +80,14 @@ export const HUMANOID_TEMPLATE: EntityTemplate = {
         bone('left_leg', 'left_leg', [2, 12, 0]),
       ],
       cubes: [
-        cube('torso', 'body', [-4, 12, -2], [8, 12, 4], '#3f7fbf', undefined, 'torso'),
-        cube('head', 'head', [-4, 24, -4], [8, 8, 8], skin, { north: bitmapPaint(faceBitmap(skin, '#4a2f1f', '#2f4f8f')), up: { kind: 'color', color: '#4a2f1f' } }, 'head'),
-        cube('right_arm', 'right_arm', [-8, 12, -2], [4, 12, 4], skin, { up: { kind: 'color', color: '#3f7fbf' } }, 'right arm'),
-        cube('left_arm', 'left_arm', [4, 12, -2], [4, 12, 4], skin, { up: { kind: 'color', color: '#3f7fbf' } }, 'left arm'),
-        cube('right_leg', 'right_leg', [-4, 0, -2], [4, 12, 4], '#3b4a6b', { down: { kind: 'color', color: '#2b2b2b' } }, 'right leg'),
-        cube('left_leg', 'left_leg', [0, 0, -2], [4, 12, 4], '#3b4a6b', { down: { kind: 'color', color: '#2b2b2b' } }, 'left leg'),
+        cube('torso', 'body', [-4, 12, -2], [8, 12, 4], shirt, undefined, 'torso'),
+        cube('head', 'head', [-4, 24, -4], [8, 8, 8], skin, { north: bitmapPaint(faceBitmap(skin, hair, '#1d1d24')), up: { kind: 'color', color: hair }, south: { kind: 'color', color: hair } }, 'head'),
+        cube('right_arm', 'right_arm', [-8, 12, -2], [4, 12, 4], skin, { up: { kind: 'color', color: shirt } }, 'right arm'),
+        cube('left_arm', 'left_arm', [4, 12, -2], [4, 12, 4], skin, { up: { kind: 'color', color: shirt } }, 'left arm'),
+        cube('right_leg', 'right_leg', [-4, 0, -2], [4, 12, 4], '#2f4858', { down: { kind: 'color', color: '#3a2418' } }, 'right leg'),
+        cube('left_leg', 'left_leg', [0, 0, -2], [4, 12, 4], '#2f4858', { down: { kind: 'color', color: '#3a2418' } }, 'left leg'),
       ],
-      spawnEgg: { baseColor: '#3f7fbf', overlayColor: '#c9a27e' },
+      spawnEgg: { baseColor: '#d27b2c', overlayColor: '#3b2a4a' },
     };
   },
 };

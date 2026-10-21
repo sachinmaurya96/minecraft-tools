@@ -24,6 +24,6 @@
   },
   "devDependencies": {
     "skinview3d": "3.4.2",
-    "three": "0.186.1"
+    "three": "0.156.1"
   }
 }

@@ -16,19 +16,19 @@ export interface TemplatePalette {
 }
 
 export const DEFAULT_TEMPLATE_PALETTE: TemplatePalette = {
-  skin: '#c98f6b',
-  hair: '#4a2f1f',
-  eyes: '#2f6fae',
-  shirt: '#3f8f5a',
-  trousers: '#3b4a6b',
-  shoes: '#2b2b2b',
+  skin: '#d8a483',
+  hair: '#3b2a4a',
+  eyes: '#1d1d24',
+  shirt: '#d27b2c',
+  trousers: '#2f4858',
+  shoes: '#3a2418',
 };
 
 export const TEMPLATE_PRESETS: Record<string, TemplatePalette> = {
   explorer: DEFAULT_TEMPLATE_PALETTE,
-  ember: { skin: '#e0b48f', hair: '#b5452b', eyes: '#3d7a3a', shirt: '#c46a1d', trousers: '#5a3d2b', shoes: '#3a2418' },
-  frost: { skin: '#8c5a3c', hair: '#1d1d24', eyes: '#5a3a24', shirt: '#4f8fc4', trousers: '#e3e8ef', shoes: '#4b5563' },
-  dusk: { skin: '#f1cdb0', hair: '#e9d27a', eyes: '#7a4fb3', shirt: '#6b3f8f', trousers: '#2d2a3a', shoes: '#191621' },
+  ember: { skin: '#e0b48f', hair: '#b5452b', eyes: '#2b3d1f', shirt: '#7a2e3b', trousers: '#5a3d2b', shoes: '#2a1a12' },
+  frost: { skin: '#8c5a3c', hair: '#e8eef4', eyes: '#1d1d24', shirt: '#4f8fc4', trousers: '#2d3a4a', shoes: '#4b5563' },
+  dusk: { skin: '#f1cdb0', hair: '#e9d27a', eyes: '#3b2350', shirt: '#6b3f8f', trousers: '#2d2a3a', shoes: '#191621' },
 };
 
 /** Tiny deterministic per-pixel variation so flat colours read as pixel art. */
@@ -83,12 +83,11 @@ export function createTemplateSkin(model: SkinModel, palette: TemplatePalette = 
           return ly < 2 || (backCol && ly < 6) ? c.hair : c.skin;
         }
         case 'front': {
-          if (ly < 2) return c.hair;
-          if (ly === 2 && (lx === 0 || lx === w - 1)) return c.hair;
-          if (ly === 4 && (lx === 1 || lx === 6)) return c.white;
-          if (ly === 4 && (lx === 2 || lx === 5)) return c.eyes;
-          if (ly === 6 && (lx === 3 || lx === 4)) return shade(c.skin, 0.72);
-          if (ly === 5 && (lx === 3 || lx === 4)) return shade(c.skin, 0.88);
+          // original face: side-swept fringe, two-pixel-tall dark eyes, cheeks, small mouth
+          if (ly === 0 || (ly === 1 && lx < 6) || (ly === 2 && lx < 3)) return c.hair;
+          if ((ly === 3 || ly === 4) && (lx === 2 || lx === 5)) return c.eyes;
+          if (ly === 5 && (lx === 1 || lx === 6)) return shade(c.skin, 0.86);
+          if (ly === 6 && (lx === 3 || lx === 4)) return shade(c.skin, 0.7);
           return c.skin;
         }
       }
@@ -107,10 +106,9 @@ export function createTemplateSkin(model: SkinModel, palette: TemplatePalette = 
         if (face === 'bottom') return c.trousers;
         if (face === 'top') return c.shirt;
         if (ly === h - 1) return shade(c.trousers, 0.8);
-        if (face === 'front' && ly === 0 && lx >= 3 && lx <= 4) return c.skin;
-        if (face === 'front' && ly === 1 && lx === 3) return shade(c.shirt, 0.75);
-        if (face === 'front' && ly === 1 && lx === 4) return shade(c.shirt, 0.75);
-        if (face === 'front' && lx === Math.floor(w / 2) && ly > 1 && ly < h - 1 && ly % 3 === 0) return shade(c.shirt, 0.7);
+        // open vest over a lighter undershirt
+        if (face === 'front' && (lx === 3 || lx === 4)) return shade(c.shirt, 1.45);
+        if (face === 'front' && ly === 7 && (lx === 1 || lx === 6)) return shade(c.shirt, 0.7);
         return c.shirt;
       },
       FACE_SHADE[face],

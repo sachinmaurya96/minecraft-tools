@@ -6,7 +6,7 @@ export const ARTIFACT_KINDS = [
   'geo-json',
   'entity-texture',
   'raw-mesh',
-  'sking-composite',
+  'cuboid-model',
 ] as const;
 export const ArtifactKindSchema = z.enum(ARTIFACT_KINDS);
 export type ArtifactKind = z.infer<typeof ArtifactKindSchema>;

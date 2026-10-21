@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "types": ["node"]
+  },
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts", "src/tests"],
+  "references": [{ "path": "../../packages/shared" }, { "path": "../../packages/minecraft-skin" }, { "path": "../../packages/bedrock-export" }]
+}
