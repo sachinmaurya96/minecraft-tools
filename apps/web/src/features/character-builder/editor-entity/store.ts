@@ -99,7 +99,15 @@ export const useEntityEditor = create<EntityEditorState>()((set, get) => ({
     })),
 
   setSaved: (projectId, revision, savedVersion, provenance, references) =>
-    set({ projectId, revision, savedVersion, saveState: 'saved', saveMessage: undefined, ...(provenance ? { provenance } : {}), ...(references ? { references } : {}) }),
+    set({
+      projectId,
+      revision,
+      savedVersion,
+      saveState: 'saved',
+      saveMessage: undefined,
+      ...(provenance ? { provenance } : {}),
+      ...(references ? { references } : {}),
+    }),
 
   setSaveState: (saveState, saveMessage) => set({ saveState, saveMessage }),
 
@@ -118,7 +126,8 @@ export const useEntityEditor = create<EntityEditorState>()((set, get) => ({
     });
   },
 
-  updateCube: (id, patch, mergeKey) => get().commit((m) => ({ ...m, cubes: m.cubes.map((c) => (c.id === id ? { ...c, ...patch } : c)) }), mergeKey && `cube:${id}:${mergeKey}`),
+  updateCube: (id, patch, mergeKey) =>
+    get().commit((m) => ({ ...m, cubes: m.cubes.map((c) => (c.id === id ? { ...c, ...patch } : c)) }), mergeKey && `cube:${id}:${mergeKey}`),
 
   updateBone: (id, patch, mergeKey) => {
     if (patch.parentId && (patch.parentId === id || isDescendant(get().bones, patch.parentId, id))) return; // no cycles
@@ -128,7 +137,14 @@ export const useEntityEditor = create<EntityEditorState>()((set, get) => ({
   addCube: (boneId) => {
     const bone = get().bones.find((b) => b.id === boneId);
     const id = newId('c');
-    const cube: Cube = { id, boneId, origin: [bone ? bone.pivot[0] - 2 : -2, bone ? bone.pivot[1] : 0, bone ? bone.pivot[2] - 2 : -2], size: [4, 4, 4], color: '#9aa0a6', name: 'cube' };
+    const cube: Cube = {
+      id,
+      boneId,
+      origin: [bone ? bone.pivot[0] - 2 : -2, bone ? bone.pivot[1] : 0, bone ? bone.pivot[2] - 2 : -2],
+      size: [4, 4, 4],
+      color: '#9aa0a6',
+      name: 'cube',
+    };
     get().commit((m) => ({ ...m, cubes: [...m.cubes, cube] }));
     set({ selectedCubeId: id, selectedBoneId: boneId });
   },
@@ -163,7 +179,9 @@ export const useEntityEditor = create<EntityEditorState>()((set, get) => ({
     if (!bone || s.bones.length <= 1) return;
     const heir = bone.parentId ?? s.bones.find((b) => b.id !== id)!.id;
     get().commit((m) => ({
-      bones: m.bones.filter((b) => b.id !== id).map((b) => (b.parentId === id ? { ...b, ...(bone.parentId ? { parentId: bone.parentId } : { parentId: undefined }) } : b)),
+      bones: m.bones
+        .filter((b) => b.id !== id)
+        .map((b) => (b.parentId === id ? { ...b, ...(bone.parentId ? { parentId: bone.parentId } : { parentId: undefined }) } : b)),
       cubes: m.cubes.map((c) => (c.boneId === id ? { ...c, boneId: heir } : c)),
     }));
     set({ selectedBoneId: heir });
@@ -183,19 +201,32 @@ export const useEntityEditor = create<EntityEditorState>()((set, get) => ({
   setEntity: (patch) => set((s) => ({ ...patch, version: s.version + 1 })),
   setBehavior: (patch) => set((s) => ({ behavior: { ...s.behavior, ...patch }, version: s.version + 1 })),
   setReferences: (references) => set((s) => ({ references, version: s.version + 1 })),
-  select: (cubeId, boneId) => set((s) => ({ selectedCubeId: cubeId, selectedBoneId: boneId ?? s.cubes.find((c) => c.id === cubeId)?.boneId ?? s.selectedBoneId })),
+  select: (cubeId, boneId) =>
+    set((s) => ({ selectedCubeId: cubeId, selectedBoneId: boneId ?? s.cubes.find((c) => c.id === cubeId)?.boneId ?? s.selectedBoneId })),
 
   undo: () =>
     set((s) => {
       const prev = s.undoStack[s.undoStack.length - 1];
       if (!prev) return {};
-      return { ...prev, undoStack: s.undoStack.slice(0, -1), redoStack: [...s.redoStack, { bones: s.bones, cubes: s.cubes }], version: s.version + 1, lastMerge: undefined };
+      return {
+        ...prev,
+        undoStack: s.undoStack.slice(0, -1),
+        redoStack: [...s.redoStack, { bones: s.bones, cubes: s.cubes }],
+        version: s.version + 1,
+        lastMerge: undefined,
+      };
     }),
   redo: () =>
     set((s) => {
       const next = s.redoStack[s.redoStack.length - 1];
       if (!next) return {};
-      return { ...next, redoStack: s.redoStack.slice(0, -1), undoStack: [...s.undoStack, { bones: s.bones, cubes: s.cubes }], version: s.version + 1, lastMerge: undefined };
+      return {
+        ...next,
+        redoStack: s.redoStack.slice(0, -1),
+        undoStack: [...s.undoStack, { bones: s.bones, cubes: s.cubes }],
+        version: s.version + 1,
+        lastMerge: undefined,
+      };
     }),
 }));
 

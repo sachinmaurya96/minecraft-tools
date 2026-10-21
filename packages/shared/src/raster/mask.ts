@@ -29,7 +29,9 @@ export function borderBackgroundMask(img: RgbaImage, tolerance = 40): Uint8Array
     push(0, y);
     push(w - 1, y);
   }
-  const seeds = extractPalette(border, 3).filter((e) => e.share >= 0.1).map((e) => e.color);
+  const seeds = extractPalette(border, 3)
+    .filter((e) => e.share >= 0.1)
+    .map((e) => e.color);
   const tolSq = tolerance * tolerance;
   const isBackground = (p: number) => {
     const i = p * 4;

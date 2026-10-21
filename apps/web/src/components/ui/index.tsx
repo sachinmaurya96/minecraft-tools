@@ -22,7 +22,12 @@ export function LinkButton({ variant = 'secondary', className, ...rest }: LinkPr
   return <Link className={cx('px-btn', `px-btn-${variant}`, className)} {...rest} />;
 }
 
-export function Panel({ className, children, as: Tag = 'section', ...rest }: { className?: string; children: ReactNode; as?: 'section' | 'div' | 'aside' | 'article' } & Record<string, unknown>) {
+export function Panel({
+  className,
+  children,
+  as: Tag = 'section',
+  ...rest
+}: { className?: string; children: ReactNode; as?: 'section' | 'div' | 'aside' | 'article' } & Record<string, unknown>) {
   return (
     <Tag className={cx('px-panel', className)} {...rest}>
       {children}
@@ -54,7 +59,17 @@ export function StatusBadge({ tone, children }: { tone: 'ok' | 'warn' | 'off' | 
   return <span className={cx('font-pixel inline-block border-2 border-shadow px-2 py-0.5 text-xs uppercase tracking-wider', style)}>{children}</span>;
 }
 
-export function Callout({ tone = 'info', title, children, className }: { tone?: 'info' | 'warn' | 'error' | 'ok'; title?: string; children: ReactNode; className?: string }) {
+export function Callout({
+  tone = 'info',
+  title,
+  children,
+  className,
+}: {
+  tone?: 'info' | 'warn' | 'error' | 'ok';
+  title?: string;
+  children: ReactNode;
+  className?: string;
+}) {
   const border = { info: 'border-lapis', warn: 'border-gold', error: 'border-redstone', ok: 'border-grass' }[tone];
   return (
     <div role={tone === 'error' ? 'alert' : 'note'} className={cx('px-inset border-l-4 p-3 text-sm', border, className)}>
@@ -74,19 +89,7 @@ export function Spinner({ label = 'Working' }: { label?: string }) {
 }
 
 /** Modal built on the native <dialog> (focus trap, Esc to close, inert background). */
-export function Dialog({
-  open,
-  onClose,
-  title,
-  children,
-  wide,
-}: {
-  open: boolean;
-  onClose: () => void;
-  title: string;
-  children: ReactNode;
-  wide?: boolean;
-}) {
+export function Dialog({ open, onClose, title, children, wide }: { open: boolean; onClose: () => void; title: string; children: ReactNode; wide?: boolean }) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   useEffect(() => {

@@ -12,6 +12,8 @@ GET  /v1/jobs/{id}/artifacts/{n}   download an output file
 from __future__ import annotations
 
 import hmac
+import asyncio
+from contextlib import asynccontextmanager, suppress
 import logging
 import platform
 
@@ -44,8 +46,24 @@ def geometry_status() -> ProviderStatus:
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     s = settings or get_settings()
-    app = FastAPI(title="Blockwright worker", version=__version__, docs_url=None, redoc_url=None, openapi_url=None)
     registry = JobRegistry(s.worker_data_dir, max_workers=max(1, s.max_concurrent_gpu_jobs), ttl_s=s.job_ttl_s)
+
+    @asynccontextmanager
+    async def lifespan(_app):
+        async def sweep():
+            while True:
+                await asyncio.sleep(60)
+                await asyncio.to_thread(registry.cleanup_expired)
+        cleanup = asyncio.create_task(sweep())
+        try:
+            yield
+        finally:
+            cleanup.cancel()
+            with suppress(asyncio.CancelledError):
+                await cleanup
+            registry.close()
+
+    app = FastAPI(title="Blockwright worker", version=__version__, docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
     sking = SkingAdapter(s)
     triposr = TripoSRAdapter(s)
     tasks = make_registry(sking, triposr)
@@ -132,6 +150,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         if not job:
             raise HTTPException(404, "unknown job")
         return job.view()
+
+    @app.delete("/v1/jobs/{job_id}", dependencies=auth)
+    def delete_job(job_id: str):
+        registry.delete(job_id)
+        return {"deleted": True}
 
     @app.post("/v1/jobs/{job_id}/cancel", dependencies=auth)
     def cancel(job_id: str):

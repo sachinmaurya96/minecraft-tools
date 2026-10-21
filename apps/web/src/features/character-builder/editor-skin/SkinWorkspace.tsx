@@ -1,14 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
-import {
-  base64ToBytes,
-  bytesToBase64,
-  decodePngToRgba,
-  encodeRgbaPng,
-  type Provenance,
-  type SkinModel,
-  type SkinProjectState,
-} from '@blockwright/shared';
+import { base64ToBytes, bytesToBase64, decodePngToRgba, encodeRgbaPng, type Provenance, type SkinModel, type SkinProjectState } from '@blockwright/shared';
 import { PageMeta } from '../../../components/PageMeta';
 import { Button, Callout, ConfirmDialog, Dialog, Panel, Spinner } from '../../../components/ui';
 import { api, ApiError, type SkinProjectView } from '../../../lib/api';
@@ -182,7 +174,10 @@ export function SkinWorkspace() {
       displayName: d.state.displayName,
       model: d.state.model,
       // the server copy expired: references are gone too, and only the server may attest AI provenance
-      provenance: d.state.provenance.origin === 'ai' ? { ...d.state.provenance, origin: 'import', notes: ['Restored from a local draft of an AI-generated skin.'] } : d.state.provenance,
+      provenance:
+        d.state.provenance.origin === 'ai'
+          ? { ...d.state.provenance, origin: 'import', notes: ['Restored from a local draft of an AI-generated skin.'] }
+          : d.state.provenance,
       references: [],
       pixels: image.data,
       dirty: true,
@@ -288,13 +283,13 @@ export function SkinWorkspace() {
       )}
       {s.provenance.inferredRegions.length > 0 && (
         <Callout className="mb-3">
-          Photo-assisted: {s.provenance.inferredRegions.length} faces were approximated (hatched in yellow on the atlas). Check the back and sides in
-          the 3D view.
+          Photo-assisted: {s.provenance.inferredRegions.length} faces were approximated (hatched in yellow on the atlas). Check the back and sides in the 3D
+          view.
         </Callout>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-[15rem_minmax(0,1fr)_minmax(18rem,24rem)]">
-        <Panel as="aside" className="order-2 p-3 lg:order-1" aria-label="Tools">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[15rem_minmax(0,1fr)_minmax(18rem,24rem)]">
+        <Panel as="aside" className="order-2 min-w-0 p-3 lg:order-1" aria-label="Tools">
           <ToolPanel onModelChange={(m) => setPendingModel(m)} />
         </Panel>
         <div ref={centerRef} className="order-1 min-w-0 lg:order-2">

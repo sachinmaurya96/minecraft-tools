@@ -10,8 +10,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const workerDir = path.join(root, 'services', 'ai-worker');
-const python =
-  process.platform === 'win32' ? path.join(workerDir, '.venv', 'Scripts', 'python.exe') : path.join(workerDir, '.venv', 'bin', 'python');
+const python = process.platform === 'win32' ? path.join(workerDir, '.venv', 'Scripts', 'python.exe') : path.join(workerDir, '.venv', 'bin', 'python');
 
 if (!existsSync(python)) {
   console.error(`Worker virtualenv not found at ${python}.\nCreate it with:  cd services/ai-worker && uv sync`);
@@ -34,8 +33,48 @@ const mode = process.argv[2] ?? 'dev';
 const args =
   mode === 'test'
     ? ['-m', 'pytest', ...process.argv.slice(3)]
-    : ['-m', 'uvicorn', 'app.main:app', '--app-dir', workerDir, '--host', host, '--port', port, ...(mode === 'dev' ? ['--reload', '--reload-dir', path.join(workerDir, 'app')] : [])];
+    : [
+        '-m',
+        'uvicorn',
+        'app.main:app',
+        '--app-dir',
+        workerDir,
+        '--host',
+        host,
+        '--port',
+        port,
+        ...(mode === 'dev' ? ['--reload', '--reload-dir', path.join(workerDir, 'app')] : []),
+      ];
 
-const child = spawn(python, args, { cwd: workerDir, stdio: 'inherit' });
-child.on('exit', (code, signal) => process.exit(signal ? 1 : (code ?? 1)));
-for (const sig of ['SIGINT', 'SIGTERM']) process.on(sig, () => child.kill(sig));
+// Give the worker/reloader its own process group so Ctrl+C is forwarded once.
+// Otherwise npm/concurrently and the terminal can signal it repeatedly, leaving
+// the reload supervisor holding its listening socket after its server exits.
+const grouped = process.platform !== 'win32';
+const child = spawn(python, args, { cwd: workerDir, stdio: 'inherit', detached: grouped });
+let stopping = false;
+let shutdownTimer;
+
+function stop(signal) {
+  if (stopping) return;
+  stopping = true;
+  child.kill(signal);
+  shutdownTimer = setTimeout(() => {
+    try {
+      if (grouped && child.pid) process.kill(-child.pid, 'SIGKILL');
+      else child.kill('SIGKILL');
+    } catch (error) {
+      if (error.code !== 'ESRCH') console.error(`Worker shutdown failed: ${error.message}`);
+    }
+  }, 5000);
+  shutdownTimer.unref();
+}
+
+child.on('error', (error) => {
+  console.error(`Could not start the worker: ${error.message}`);
+  process.exit(1);
+});
+child.on('exit', (code, signal) => {
+  clearTimeout(shutdownTimer);
+  process.exit(stopping ? 0 : signal ? 1 : (code ?? 1));
+});
+for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => stop(signal));

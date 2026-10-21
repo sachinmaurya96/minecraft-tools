@@ -4,6 +4,8 @@ import { Button, Callout, ConfirmDialog, Panel } from '../components/ui';
 import { api, ApiError, forgetSession } from '../lib/api';
 import { storage } from '../lib/storage';
 import { useCapabilities } from '../lib/useCapabilities';
+import { useSkinEditor } from '../features/character-builder/editor-skin/store';
+import { useEntityEditor } from '../features/character-builder/editor-entity/store';
 
 export function PrivacyPage() {
   const caps = useCapabilities();
@@ -17,6 +19,8 @@ export function PrivacyPage() {
       const { deleted } = await api.deleteAllMyData();
       for (const k of ['bw.skinProject', 'bw.entityProject', 'bw.skinDraft', 'bw.entityDraft']) storage.remove(k);
       forgetSession();
+      useSkinEditor.setState(useSkinEditor.getInitialState(), true);
+      useEntityEditor.setState(useEntityEditor.getInitialState(), true);
       const total = Object.values(deleted).reduce((a, b) => a + b, 0);
       setStatus({ tone: 'ok', text: `Deleted ${total} stored item(s) and forgot this browser's session.` });
     } catch (e) {
@@ -33,31 +37,31 @@ export function PrivacyPage() {
         <h2>What is stored</h2>
         <ul className="list-disc space-y-1 pl-5">
           <li>
-            <strong className="text-ink">Reference photos</strong> you upload. The server re-encodes them, which removes EXIF/GPS and other metadata,
-            and stores them privately under a random ID that only your browser session can use.
+            <strong className="text-ink">Reference photos</strong> you upload. The server re-encodes them, which removes EXIF/GPS and other metadata, and stores
+            them privately under a random ID that only your browser session can use.
           </li>
           <li>
             <strong className="text-ink">Projects</strong> (your skin or entity) and recent revisions, plus files you export.
           </li>
           <li>
-            <strong className="text-ink">A random session token</strong> in your browser's local storage, so the server knows which files are yours. It
-            contains no personal information.
+            <strong className="text-ink">A random session token</strong> in your browser's local storage, so the server knows which files are yours. It contains
+            no personal information.
           </li>
         </ul>
         <h2>How long</h2>
         <p>
-          Everything is deleted automatically {hours ? <strong className="text-ink">{hours} hours</strong> : 'a limited time'} after it was last
-          saved. Download what you want to keep. You can also delete everything right now with the button below.
+          Everything is deleted automatically {hours ? <strong className="text-ink">{hours} hours</strong> : 'a limited time'} after it was last saved. Download
+          what you want to keep. You can also delete everything right now with the button below.
         </p>
         <h2>Who sees it</h2>
         <p>
-          Nobody else. Photos are processed only on this service's own servers; they are not sent to third-party AI providers, not shown in any gallery
-          and never used to train models.
+          Uploads are private to your browser session; server operators can access stored files to operate this service. Photos are processed only on this
+          service's own servers; they are not sent to third-party AI providers, not shown in any gallery and never used to train models.
         </p>
         <h2>Your responsibilities</h2>
         <p>
-          Only upload images you have the right to use. Be careful with photos of other people, especially children: you need their (or their
-          guardian's) permission. Do not upload illegal or hateful content.
+          Only upload images you have the right to use. Be careful with photos of other people, especially children: you need their (or their guardian's)
+          permission. Do not upload illegal or hateful content.
         </p>
       </div>
       <Panel className="mt-8 p-5">

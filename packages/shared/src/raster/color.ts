@@ -9,7 +9,10 @@ export function hexToRgba(hex: string): Rgba {
 }
 
 export function rgbaToHex(c: Rgba, includeAlpha = c[3] !== 255): string {
-  const h = (n: number) => Math.round(Math.max(0, Math.min(255, n))).toString(16).padStart(2, '0');
+  const h = (n: number) =>
+    Math.round(Math.max(0, Math.min(255, n)))
+      .toString(16)
+      .padStart(2, '0');
   return `#${h(c[0])}${h(c[1])}${h(c[2])}${includeAlpha ? h(c[3]) : ''}`;
 }
 
@@ -32,10 +35,5 @@ export function luminance(c: Rgba): number {
 
 /** Scale RGB by `factor` (e.g. 0.8 to darken), keeping alpha. */
 export function shade(c: Rgba, factor: number): Rgba {
-  return [
-    Math.round(Math.min(255, c[0] * factor)),
-    Math.round(Math.min(255, c[1] * factor)),
-    Math.round(Math.min(255, c[2] * factor)),
-    c[3],
-  ];
+  return [Math.round(Math.min(255, c[0] * factor)), Math.round(Math.min(255, c[1] * factor)), Math.round(Math.min(255, c[2] * factor)), c[3]];
 }

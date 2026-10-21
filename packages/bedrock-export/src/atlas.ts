@@ -1,12 +1,4 @@
-import {
-  createImage,
-  hexToRgba,
-  LIMITS,
-  resizeNearest,
-  type Cube,
-  type RgbaImage,
-  type VoxelFace,
-} from '@blockwright/shared';
+import { createImage, hexToRgba, LIMITS, resizeNearest, type Cube, type RgbaImage, type VoxelFace } from '@blockwright/shared';
 import { FACE_ORDER, faceTexelSize, type TexRect } from './faces.js';
 import { decodeFacePixels } from './model.js';
 
@@ -120,11 +112,7 @@ function bestPacking(items: Item[], maxSize: number) {
     if (height > maxSize) continue;
     const area = width * height;
     const bestArea = best ? best.width * best.height : Infinity;
-    if (
-      !best ||
-      area < bestArea ||
-      (area === bestArea && Math.max(width, height) < Math.max(best.width, best.height))
-    ) {
+    if (!best || area < bestArea || (area === bestArea && Math.max(width, height) < Math.max(best.width, best.height))) {
       best = { width, height, pos: packed.pos };
     }
   }
@@ -153,15 +141,10 @@ export function packAtlas(cubes: readonly Cube[], options: AtlasOptions = {}): A
   // 2. palette: shared 4x4 swatches for solid colours
   const colors = [...new Set(contents.filter((c) => c.color).map((c) => c.color!))].sort();
   const bitmapFaces = contents.filter((c) => c.bitmap);
-  const items: Item[] = [
-    ...colors.map((_, index) => ({ w: 4, h: 4, index })),
-    ...bitmapFaces.map((c, i) => ({ w: c.w, h: c.h, index: colors.length + i })),
-  ];
+  const items: Item[] = [...colors.map((_, index) => ({ w: 4, h: 4, index })), ...bitmapFaces.map((c, i) => ({ w: c.w, h: c.h, index: colors.length + i }))];
   const packed = bestPacking(items, maxSize);
   if (!packed) {
-    throw new ModelTooComplexError(
-      `The model needs more texture space than ${maxSize}x${maxSize}. Reduce the number of painted faces or cubes.`,
-    );
+    throw new ModelTooComplexError(`The model needs more texture space than ${maxSize}x${maxSize}. Reduce the number of painted faces or cubes.`);
   }
   const image = createImage(packed.width, packed.height);
   const swatch = new Map<string, TexRect>();
@@ -230,4 +213,3 @@ export function readFaceBitmap(atlas: Atlas, cubeId: string, face: VoxelFace): R
   }
   return out;
 }
-

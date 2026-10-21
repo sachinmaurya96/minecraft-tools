@@ -12,8 +12,22 @@ const TOOLS: Array<{ id: SkinTool; label: string; key: string }> = [
 
 /** Original palette (no Minecraft texture colours copied). */
 const PALETTE = [
-  '#1d1d24', '#4b5563', '#9aa0a6', '#eceff4', '#4a2f1f', '#8b5a3c', '#c98f6b', '#f1cdb0',
-  '#b5452b', '#e5484d', '#f2c14e', '#5fb83f', '#3d7f27', '#4fd1d9', '#3b6fd8', '#6b3f8f',
+  '#1d1d24',
+  '#4b5563',
+  '#9aa0a6',
+  '#eceff4',
+  '#4a2f1f',
+  '#8b5a3c',
+  '#c98f6b',
+  '#f1cdb0',
+  '#b5452b',
+  '#e5484d',
+  '#f2c14e',
+  '#5fb83f',
+  '#3d7f27',
+  '#4fd1d9',
+  '#3b6fd8',
+  '#6b3f8f',
 ];
 
 function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
@@ -60,7 +74,13 @@ export function ToolPanel({ onModelChange }: { onModelChange: (m: SkinModel) => 
       <fieldset>
         <legend className="font-pixel mb-1">Colour</legend>
         <div className="flex items-center gap-2">
-          <input type="color" aria-label="Colour picker" value={hex} onChange={(e) => setHex(e.target.value)} className="h-9 w-12 cursor-pointer border-2 border-shadow bg-transparent" />
+          <input
+            type="color"
+            aria-label="Colour picker"
+            value={hex}
+            onChange={(e) => setHex(e.target.value)}
+            className="h-9 w-12 cursor-pointer border-2 border-shadow bg-transparent"
+          />
           <label className="sr-only" htmlFor="hex">
             Hex colour
           </label>
@@ -69,7 +89,15 @@ export function ToolPanel({ onModelChange }: { onModelChange: (m: SkinModel) => 
         <label className="mt-2 block text-xs text-muted" htmlFor="alpha">
           Opacity {Math.round((s.color[3] / 255) * 100)}% (outer layer only; base layer is always opaque)
         </label>
-        <input id="alpha" type="range" min={0} max={255} value={s.color[3]} onChange={(e) => s.setColor([s.color[0], s.color[1], s.color[2], Number(e.target.value)])} className="w-full" />
+        <input
+          id="alpha"
+          type="range"
+          min={0}
+          max={255}
+          value={s.color[3]}
+          onChange={(e) => s.setColor([s.color[0], s.color[1], s.color[2], Number(e.target.value)])}
+          className="w-full"
+        />
         <div className="mt-2 grid grid-cols-8 gap-1" aria-label="Palette">
           {[...PALETTE, ...s.recentColors.filter((c) => !PALETTE.includes(c))].slice(0, 24).map((c) => (
             <button
@@ -108,7 +136,9 @@ export function ToolPanel({ onModelChange }: { onModelChange: (m: SkinModel) => 
         ))}
         <Toggle label="Pixel grid" checked={s.showGrid} onChange={(v) => s.set('showGrid', v)} />
         <Toggle label="Face outlines" checked={s.showGuides} onChange={(v) => s.set('showGuides', v)} />
-        {s.provenance.inferredRegions.length > 0 && <Toggle label="Mark approximate areas" checked={s.showInferred} onChange={(v) => s.set('showInferred', v)} />}
+        {s.provenance.inferredRegions.length > 0 && (
+          <Toggle label="Mark approximate areas" checked={s.showInferred} onChange={(v) => s.set('showInferred', v)} />
+        )}
       </fieldset>
     </div>
   );

@@ -104,6 +104,14 @@ export class WorkerClient {
     await this.request(`/v1/jobs/${encodeURIComponent(id)}/cancel`, { method: 'POST' });
   }
 
+  async deleteJob(id: string): Promise<void> {
+    try {
+      await this.request(`/v1/jobs/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    } catch (error) {
+      if (!(error instanceof WorkerError && error.status === 404)) throw error;
+    }
+  }
+
   async downloadArtifact(id: string, name: string, maxBytes: number): Promise<Uint8Array> {
     const res = await this.request(`/v1/jobs/${encodeURIComponent(id)}/artifacts/${encodeURIComponent(name)}`, {}, 120_000);
     const len = Number(res.headers.get('content-length') ?? 0);

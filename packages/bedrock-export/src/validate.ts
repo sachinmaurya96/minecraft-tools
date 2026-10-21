@@ -1,12 +1,4 @@
-import {
-  checkEntityIdentifier,
-  decodePngToRgba,
-  LIMITS,
-  ReportBuilder,
-  utf8Decode,
-  type ValidationReport,
-  type VoxelFace,
-} from '@blockwright/shared';
+import { checkEntityIdentifier, decodePngToRgba, LIMITS, ReportBuilder, utf8Decode, type ValidationReport, type VoxelFace } from '@blockwright/shared';
 import { boxUvInternal, FACE_ORDER, internalFaceUv } from './faces.js';
 import type { GeoBone, GeoFile } from './geometry.js';
 import type { PackFiles } from './pack.js';
@@ -25,7 +17,7 @@ export interface AddonValidation extends ValidationReport {
   summary: AddonSummary;
 }
 
-const SAFE_PATH = /^[A-Za-z0-9_.\-]+(\/[A-Za-z0-9_.\-]+)*$/;
+const SAFE_PATH = /^[A-Za-z0-9_.-]+(\/[A-Za-z0-9_.-]+)*$/;
 
 export function isSafeArchivePath(p: string): boolean {
   if (!p || p.length > 200 || p.startsWith('/') || p.includes('\\') || p.includes('\0')) return false;
@@ -34,9 +26,21 @@ export function isSafeArchivePath(p: string): boolean {
   return p.split('/').every((seg) => seg !== '..' && seg !== '.' && seg !== '');
 }
 
-const RP_ALLOWED = ['manifest.json', 'pack_icon.png', 'entity/', 'models/', 'textures/', 'render_controllers/', 'texts/', 'animations/', 'animation_controllers/'];
+const RP_ALLOWED = [
+  'manifest.json',
+  'pack_icon.png',
+  'entity/',
+  'models/',
+  'textures/',
+  'render_controllers/',
+  'texts/',
+  'animations/',
+  'animation_controllers/',
+];
 const BP_ALLOWED = ['manifest.json', 'pack_icon.png', 'entities/', 'spawn_rules/', 'loot_tables/'];
 
+// Raw JSON is inspected field-by-field below to produce detailed validation reports.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseJson(files: PackFiles, path: string, r: ReportBuilder): any {
   const bytes = files.get(path);
   if (!bytes) {
@@ -52,9 +56,9 @@ function parseJson(files: PackFiles, path: string, r: ReportBuilder): any {
 }
 
 const isVersion = (v: unknown) => Array.isArray(v) && v.length === 3 && v.every((n) => Number.isInteger(n) && n >= 0);
-const isVec3 = (v: unknown): v is [number, number, number] =>
-  Array.isArray(v) && v.length === 3 && v.every((n) => typeof n === 'number' && Number.isFinite(n));
+const isVec3 = (v: unknown): v is [number, number, number] => Array.isArray(v) && v.length === 3 && v.every((n) => typeof n === 'number' && Number.isFinite(n));
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- raw manifest, checked field-by-field
 function checkManifest(m: any, label: string, moduleType: string, r: ReportBuilder): string[] {
   const uuids: string[] = [];
   if (!m) return uuids;
@@ -211,7 +215,7 @@ export function validateAddonPacks(behaviorPack: PackFiles, resourcePack: PackFi
 
   r.check('dependency-link');
   if (rpManifest?.header && bpManifest) {
-    const deps: any[] = Array.isArray(bpManifest.dependencies) ? bpManifest.dependencies : [];
+    const deps: Array<{ uuid?: unknown; version?: unknown }> = Array.isArray(bpManifest.dependencies) ? bpManifest.dependencies : [];
     const dep = deps.find((d) => typeof d.uuid === 'string' && d.uuid.toLowerCase() === String(rpManifest.header.uuid).toLowerCase());
     if (!dep) r.error('DEPENDENCY_MISSING', 'Behavior pack does not depend on the resource pack UUID');
     else if (JSON.stringify(dep.version) !== JSON.stringify(rpManifest.header.version)) {
@@ -240,6 +244,7 @@ export function validateAddonPacks(behaviorPack: PackFiles, resourcePack: PackFi
 
   r.check('client-entity');
   const clientFiles = listUnder(resourcePack, 'entity/', '.entity.json');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- raw client entity, checked field-by-field
   let client: any;
   if (clientFiles.length !== 1) r.error('RP_ENTITY_COUNT', `Expected exactly 1 client entity file, found ${clientFiles.length}`);
   else {
@@ -286,7 +291,8 @@ export function validateAddonPacks(behaviorPack: PackFiles, resourcePack: PackFi
   }
   if (client && !geoRef) r.error('GEO_REF_MISSING', 'Client entity has no default geometry');
   else if (client && !geoMatch) r.error('GEO_NOT_FOUND', `Geometry "${geoRef}" referenced by the client entity is not in the pack`);
-  else if (geoRef && !/^geometry\.[a-z0-9_.]+$/.test(geoRef)) r.warn('GEO_ID_STYLE', `Geometry identifier "${geoRef}" should look like geometry.<namespace>.<name>`);
+  else if (geoRef && !/^geometry\.[a-z0-9_.]+$/.test(geoRef))
+    r.warn('GEO_ID_STYLE', `Geometry identifier "${geoRef}" should look like geometry.<namespace>.<name>`);
 
   r.check('texture-reference');
   const texRef: string | undefined = client?.textures?.default;
@@ -314,7 +320,12 @@ export function validateAddonPacks(behaviorPack: PackFiles, resourcePack: PackFi
   r.check('lang');
   const lang = resourcePack.get('texts/en_US.lang');
   if (!lang) r.warn('LANG_MISSING', 'No texts/en_US.lang: the entity name shows as its raw identifier');
-  else if (identifier && !utf8Decode(lang, false).split(/\r?\n/).some((l: string) => l.startsWith(`entity.${identifier}.name=`))) {
+  else if (
+    identifier &&
+    !utf8Decode(lang, false)
+      .split(/\r?\n/)
+      .some((l: string) => l.startsWith(`entity.${identifier}.name=`))
+  ) {
     r.warn('LANG_NAME_MISSING', `texts/en_US.lang has no entity.${identifier}.name entry`);
   }
 

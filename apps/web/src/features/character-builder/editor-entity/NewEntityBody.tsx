@@ -36,7 +36,13 @@ export function NewEntityBody({ onStart }: { onStart: (s: EntityStart) => void }
       if (image.width === 64 && image.height === 32) image = convertLegacySkin(image).image;
       if (image.width !== 64 || image.height !== 64) throw new Error('Use a 64×64 (or legacy 64×32) skin PNG.');
       const model = skinToHumanoid(image, suggestModel(image));
-      onStart({ model, templateId: 'humanoid', displayName: 'Skin figure', slug: 'skin_figure', provenance: prov('import', ['Built from a player skin with the standard box-UV layout.']) });
+      onStart({
+        model,
+        templateId: 'humanoid',
+        displayName: 'Skin figure',
+        slug: 'skin_figure',
+        provenance: prov('import', ['Built from a player skin with the standard box-UV layout.']),
+      });
     } catch (e) {
       setError((e as Error).message);
     }
@@ -77,7 +83,14 @@ export function NewEntityBody({ onStart }: { onStart: (s: EntityStart) => void }
               variant="primary"
               onClick={() => {
                 const m = t.build();
-                onStart({ model: { bones: m.bones, cubes: m.cubes }, spawnEgg: m.spawnEgg, templateId: t.id, displayName: t.name, slug: t.id === 'humanoid' ? 'blocky_buddy' : t.id === 'quadruped' ? 'critter' : 'living_block', provenance: prov('template') });
+                onStart({
+                  model: { bones: m.bones, cubes: m.cubes },
+                  spawnEgg: m.spawnEgg,
+                  templateId: t.id,
+                  displayName: t.name,
+                  slug: t.id === 'humanoid' ? 'blocky_buddy' : t.id === 'quadruped' ? 'critter' : 'living_block',
+                  provenance: prov('template'),
+                });
               }}
             >
               Use {t.name.toLowerCase()}
@@ -95,7 +108,14 @@ export function NewEntityBody({ onStart }: { onStart: (s: EntityStart) => void }
             variant="primary"
             onClick={() => {
               const m = ENTITY_TEMPLATES[0]!.build();
-              onStart({ model: { bones: m.bones, cubes: m.cubes }, templateId: 'humanoid', displayName: 'Photo figure', slug: 'photo_figure', provenance: prov('template'), then: 'photo' });
+              onStart({
+                model: { bones: m.bones, cubes: m.cubes },
+                templateId: 'humanoid',
+                displayName: 'Photo figure',
+                slug: 'photo_figure',
+                provenance: prov('template'),
+                then: 'photo',
+              });
             }}
           >
             Use my photos
@@ -129,7 +149,9 @@ export function NewEntityBody({ onStart }: { onStart: (s: EntityStart) => void }
           <p className="mb-2 text-sm text-muted">Convert a .glb/.obj mesh into Minecraft cuboids (voxelized; detail is lost).</p>
           <Button
             disabled={!meshProvider.provider?.available}
-            onClick={() => onStart({ model: block.build(), templateId: 'block', displayName: 'Mesh model', slug: 'mesh_model', provenance: prov('template'), then: 'mesh' })}
+            onClick={() =>
+              onStart({ model: block.build(), templateId: 'block', displayName: 'Mesh model', slug: 'mesh_model', provenance: prov('template'), then: 'mesh' })
+            }
           >
             Convert a mesh
           </Button>
@@ -140,11 +162,15 @@ export function NewEntityBody({ onStart }: { onStart: (s: EntityStart) => void }
             <h3 className="text-lg">AI 3D from a photo (TripoSR)</h3>
             {triposr.provider && <ProviderStatusBadge p={triposr.provider} />}
           </div>
-          <p className="mb-2 text-sm text-muted">One photo → a generic AI mesh → converted to cuboids. Only one view is used; hidden sides are guessed. Label: AI-generated.</p>
+          <p className="mb-2 text-sm text-muted">
+            One photo → a generic AI mesh → converted to cuboids. Only one view is used; hidden sides are guessed. Label: AI-generated.
+          </p>
           {triposr.provider && !triposr.provider.available && <p className="mb-2 text-xs text-gold">{triposr.provider.reason}</p>}
           <Button
             disabled={!triposr.provider?.available}
-            onClick={() => onStart({ model: block.build(), templateId: 'block', displayName: 'AI model', slug: 'ai_model', provenance: prov('template'), then: 'ai' })}
+            onClick={() =>
+              onStart({ model: block.build(), templateId: 'block', displayName: 'AI model', slug: 'ai_model', provenance: prov('template'), then: 'ai' })
+            }
           >
             Continue with AI
           </Button>

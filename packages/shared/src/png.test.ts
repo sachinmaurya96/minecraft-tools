@@ -19,7 +19,7 @@ describe('png codec', () => {
     expect(() => decodePngToRgba(new TextEncoder().encode('GIF89a not a png'))).toThrow(PngDecodeError);
     const bytes = encodeRgbaPng(createImage(8, 8, [1, 2, 3, 255]));
     const corrupt = bytes.slice();
-    corrupt[corrupt.length - 20] ^= 0xff; // flip bits inside IDAT/IEND -> CRC mismatch
+    corrupt[corrupt.length - 20]! ^= 0xff; // flip bits inside IDAT/IEND -> CRC mismatch
     expect(() => decodePngToRgba(corrupt)).toThrow(PngDecodeError);
     expect(() => decodePngToRgba(bytes.slice(0, 30))).toThrow(PngDecodeError);
   });

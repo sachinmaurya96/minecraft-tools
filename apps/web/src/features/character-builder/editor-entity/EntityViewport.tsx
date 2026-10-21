@@ -54,7 +54,19 @@ function cubeGeometry(cube: RenderCube, tw: number, th: number): BufferGeometry 
   return g;
 }
 
-function CubeMesh({ cube, model, material, selected, onSelect }: { cube: RenderCube; model: RenderModel; material: MeshLambertMaterial; selected: boolean; onSelect: () => void }) {
+function CubeMesh({
+  cube,
+  model,
+  material,
+  selected,
+  onSelect,
+}: {
+  cube: RenderCube;
+  model: RenderModel;
+  material: MeshLambertMaterial;
+  selected: boolean;
+  onSelect: () => void;
+}) {
   const geometry = useMemo(() => cubeGeometry(cube, model.textureWidth, model.textureHeight), [cube, model.textureWidth, model.textureHeight]);
   const edges = useMemo(() => (selected ? new EdgesGeometry(geometry) : null), [geometry, selected]);
   useEffect(() => () => geometry.dispose(), [geometry]);
@@ -167,7 +179,10 @@ function Scene({ model, atlas, selectedIndex, onSelectIndex, view, showGrid }: E
     };
     for (const root of children.get(undefined) ?? []) visit(root, new Vector3());
     if (!Number.isFinite(min.x)) return { target: new Vector3(0, 1, 0), distance: 4 };
-    const center = min.clone().add(max).multiplyScalar(0.5 / 16);
+    const center = min
+      .clone()
+      .add(max)
+      .multiplyScalar(0.5 / 16);
     const size = max.clone().sub(min).length() / 16;
     return { target: center, distance: Math.max(1.5, size * 1.6) };
   }, [model, children]);
@@ -207,7 +222,10 @@ export interface EntityViewportProps {
 
 export function EntityViewport(props: EntityViewportProps) {
   const webgl = useMemo(hasWebGL, []);
-  const fallback = useMemo(() => (webgl ? null : rgbaToCanvas(renderFrontView({ bones: props.bones, cubes: props.cubes }, props.atlas, 256)).toDataURL()), [webgl, props.atlas, props.cubes, props.bones]);
+  const fallback = useMemo(
+    () => (webgl ? null : rgbaToCanvas(renderFrontView({ bones: props.bones, cubes: props.cubes }, props.atlas, 256)).toDataURL()),
+    [webgl, props.atlas, props.cubes, props.bones],
+  );
   if (!webgl) {
     return (
       <div>
@@ -220,7 +238,12 @@ export function EntityViewport(props: EntityViewportProps) {
   }
   return (
     <div className="px-inset h-[min(60vh,560px)] min-h-80 w-full" data-testid="entity-3d">
-      <Canvas frameloop="demand" camera={{ fov: 40, position: [3, 2, -4] }} gl={{ preserveDrawingBuffer: true, antialias: true }} aria-label="3D preview of the entity. Drag to rotate, scroll or pinch to zoom, click a cube to select it.">
+      <Canvas
+        frameloop="demand"
+        camera={{ fov: 40, position: [3, 2, -4] }}
+        gl={{ preserveDrawingBuffer: true, antialias: true }}
+        aria-label="3D preview of the entity. Drag to rotate, scroll or pinch to zoom, click a cube to select it."
+      >
         <Scene {...props} model={props.render} />
       </Canvas>
     </div>

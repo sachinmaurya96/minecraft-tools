@@ -39,9 +39,7 @@ export class AppErrorBoundary extends Component<{ children: ReactNode }, { error
         <h1 className="mb-4 text-3xl">Something broke</h1>
         <Callout tone="error" title="The app hit an unexpected error.">
           <p className="mb-2">{this.state.error.message}</p>
-          <p>
-            Reload the page. Projects you saved are kept on the server for a limited time; your last local draft is kept in this browser.
-          </p>
+          <p>Reload the page. Projects you saved are kept on the server for a limited time; your last local draft is kept in this browser.</p>
         </Callout>
       </div>
     );

@@ -8,7 +8,9 @@ export function ToolsPage() {
     <div className="mx-auto max-w-7xl px-4 py-10">
       <PageMeta title="Tools" description="Blockwright tools for Minecraft creators. Only tools marked available can be used today." />
       <h1 className="mb-2 text-3xl">Tools</h1>
-      <p className="mb-8 text-muted">Only tools marked “Available” work today. Planned tools are listed so you know what may come; they cannot be opened yet.</p>
+      <p className="mb-8 text-muted">
+        Only tools marked “Available” work today. Planned tools are listed so you know what may come; they cannot be opened yet.
+      </p>
       <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {tools.map((t) => (
           <li key={t.id}>

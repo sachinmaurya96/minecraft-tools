@@ -6,7 +6,7 @@
   "license": "UNLICENSED",
   "type": "module",
   "engines": {
-    "node": ">=24"
+    "node": ">=24.15.0"
   },
   "workspaces": [
     "packages/shared",
@@ -23,22 +23,30 @@
     "build:packages": "npm run build -w packages/shared && npm run build -w packages/minecraft-skin && npm run build -w packages/bedrock-export",
     "build": "npm run build:packages && npm run build -w apps/api && npm run build -w apps/web",
     "start": "npm run start -w apps/api",
-    "typecheck": "npm run build:packages && npm run typecheck --workspaces --if-present",
+    "typecheck": "npm run build:packages && npm run typecheck --workspaces --if-present && tsc -p tsconfig.e2e.json",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "npm run test --workspaces --if-present",
-    "test:e2e": "playwright test",
+    "test:e2e": "npm run build && playwright test",
     "test:python": "node scripts/worker.mjs test",
-    "verify:exports": "node scripts/verify-exports.mjs",
-    "fixtures": "node scripts/generate-fixtures.mjs"
+    "verify:exports": "npm run build:packages && npm run build -w apps/api && node scripts/verify-exports.mjs",
+    "fixtures": "npm run build:packages && npm run build -w apps/api && node scripts/generate-fixtures.mjs",
+    "test:integration": "node scripts/integration-smoke.mjs",
+    "setup": "node scripts/setup.mjs",
+    "dev:manual": "concurrently -k -n WEB,API -c green,cyan \"npm run dev:web\" \"npm run dev:api\""
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "1.64.1",
     "@types/node": "24.19.2",
     "concurrently": "10.0.6",
+    "eslint": "^10.13.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
     "prettier": "3.9.10",
     "typescript": "6.0.3",
+    "typescript-eslint": "^8.72.0",
     "vitest": "5.0.5"
   },
   "overrides": {

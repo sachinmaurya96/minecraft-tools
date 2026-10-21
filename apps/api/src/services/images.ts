@@ -9,14 +9,30 @@ import type { BaseRecord, FsStore } from '../storage/store.js';
 // Never let libvips decode anything but these three formats: it also supports
 // SVG, HEIF, TIFF, PDF... which we do not want to parse from untrusted input.
 export function sniffImageType(buf: Uint8Array): UploadMime | null {
-  if (buf.length >= 8 && buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47 && buf[4] === 0x0d && buf[5] === 0x0a && buf[6] === 0x1a && buf[7] === 0x0a) {
+  if (
+    buf.length >= 8 &&
+    buf[0] === 0x89 &&
+    buf[1] === 0x50 &&
+    buf[2] === 0x4e &&
+    buf[3] === 0x47 &&
+    buf[4] === 0x0d &&
+    buf[5] === 0x0a &&
+    buf[6] === 0x1a &&
+    buf[7] === 0x0a
+  ) {
     return 'image/png';
   }
   if (buf.length >= 3 && buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return 'image/jpeg';
   if (
     buf.length >= 12 &&
-    buf[0] === 0x52 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x46 &&
-    buf[8] === 0x57 && buf[9] === 0x45 && buf[10] === 0x42 && buf[11] === 0x50
+    buf[0] === 0x52 &&
+    buf[1] === 0x49 &&
+    buf[2] === 0x46 &&
+    buf[3] === 0x46 &&
+    buf[8] === 0x57 &&
+    buf[9] === 0x45 &&
+    buf[10] === 0x42 &&
+    buf[11] === 0x50
   ) {
     return 'image/webp';
   }
@@ -117,12 +133,10 @@ export class ImageService {
       warnings.push(`Downscaled from ${width}x${height} to ${normalized.info.width}x${normalized.info.height}.`);
     }
     if (Math.min(width, height) < 256 && !isComposite) warnings.push('Low resolution: fine details may be lost.');
-    if (exifOrientationApplied) warnings.push('Rotated upright using the photo\'s EXIF orientation; all metadata was removed.');
+    if (exifOrientationApplied) warnings.push("Rotated upright using the photo's EXIF orientation; all metadata was removed.");
 
-    const thumb = await sharp(normalized.data)
-      .resize({ width: 320, height: 320, fit: 'inside', withoutEnlargement: true })
-      [asPng ? 'png' : 'jpeg']()
-      .toBuffer();
+    const thumbnail = sharp(normalized.data).resize({ width: 320, height: 320, fit: 'inside', withoutEnlargement: true });
+    const thumb = await (asPng ? thumbnail.png() : thumbnail.jpeg()).toBuffer();
 
     const sha256 = createHash('sha256').update(normalized.data).digest('hex');
     const owned = await this.listOwned(ownerId);

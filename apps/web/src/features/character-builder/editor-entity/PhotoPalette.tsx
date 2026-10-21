@@ -34,7 +34,6 @@ export function PhotoPalette() {
     return () => {
       alive = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 
   function apply(hex: string) {

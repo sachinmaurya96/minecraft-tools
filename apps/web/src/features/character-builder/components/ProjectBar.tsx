@@ -59,7 +59,10 @@ export function ProjectBar({
           maxLength={48}
           onChange={(e) => onRename(e.target.value.replace(/[=\n\r\t]/g, ''))}
         />
-        <ProvenanceBadge label={provenanceLabel(provenance)} edited={provenance.origin !== 'template' && provenance.origin !== 'blank' && provenance.editedAfterGeneration} />
+        <ProvenanceBadge
+          label={provenanceLabel(provenance)}
+          edited={provenance.origin !== 'template' && provenance.origin !== 'blank' && provenance.editedAfterGeneration}
+        />
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <span

@@ -1,13 +1,6 @@
 import type { Cube, Vec3, VoxelFace } from '@blockwright/shared';
 import { faceKey, type Atlas } from './atlas.js';
-import {
-  boxUvInternal,
-  FACE_ORDER,
-  facePoint,
-  faceUvEntry,
-  internalFaceUv,
-  type GeoUvFace,
-} from './faces.js';
+import { boxUvInternal, FACE_ORDER, facePoint, faceUvEntry, internalFaceUv, type GeoUvFace } from './faces.js';
 import { modelBounds, topoSortBones, type EntityModel } from './model.js';
 
 export const GEOMETRY_FORMAT_VERSION = '1.12.0';

@@ -61,7 +61,10 @@ describe('raster basics', () => {
     expect(p[0]!.color).toEqual([250, 0, 0, 255]);
     expect(p[0]!.share).toBeCloseTo(0.7);
     expect(extractPalette(img, 2)).toEqual(p);
-    const q = quantizeImage(img, [[255, 0, 0, 255], [0, 0, 255, 255]]);
+    const q = quantizeImage(img, [
+      [255, 0, 0, 255],
+      [0, 0, 255, 255],
+    ]);
     expect(getPixel(q, 0, 0)).toEqual([0, 0, 255, 255]);
   });
 

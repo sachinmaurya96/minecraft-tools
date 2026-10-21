@@ -134,11 +134,18 @@ export function SkingDialog({
       )}
       <Callout className="mb-3">
         Sking does not read raw photos directly. It needs one square image with a <strong>front-left view</strong> on the left half and a{' '}
-        <strong>back-left view</strong> on the right half, in the style it was trained on. Straight-on photos may give poor results. Side photos are
-        not used by the model.
+        <strong>back-left view</strong> on the right half, in the style it was trained on. Straight-on photos may give poor results. Side photos are not used by
+        the model.
       </Callout>
       <div className="grid gap-4 lg:grid-cols-[auto_1fr]">
-        <canvas ref={canvasRef} width={SIZE} height={SIZE} className="border-2 border-shadow" style={{ width: 360, height: 360 }} aria-label="Composite that will be sent to Sking" />
+        <canvas
+          ref={canvasRef}
+          width={SIZE}
+          height={SIZE}
+          className="border-2 border-shadow"
+          style={{ width: 360, height: 360 }}
+          aria-label="Composite that will be sent to Sking"
+        />
         <div className="space-y-3 text-sm">
           {!custom && (
             <>
@@ -173,7 +180,11 @@ export function SkingDialog({
             <input type="checkbox" className="mt-1" checked={reviewed} onChange={(e) => setReviewed(e.target.checked)} />
             <span>I checked the composite: left half is the front-left view, right half is the back-left view.</span>
           </label>
-          <Button variant="primary" onClick={generate} disabled={!ready || !reviewed || !composite || (job.data && !['ready', 'failed', 'cancelled'].includes(job.data.status))}>
+          <Button
+            variant="primary"
+            onClick={generate}
+            disabled={!ready || !reviewed || !composite || (job.data && !['ready', 'failed', 'cancelled'].includes(job.data.status))}
+          >
             Generate skin with AI
           </Button>
           {job.data && <JobProgress job={job.data} onCancel={() => api.cancelJob(job.data!.id)} />}

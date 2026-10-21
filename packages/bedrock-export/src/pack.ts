@@ -61,7 +61,10 @@ const text = (value: string) => utf8Encode(value);
 
 function langValue(s: string): string {
   // .lang values end at a line break; "##" starts a comment
-  return s.replace(/[\r\n\t]/g, ' ').replace(/##/g, '# #').trim();
+  return s
+    .replace(/[\r\n\t]/g, ' ')
+    .replace(/##/g, '# #')
+    .trim();
 }
 
 export function buildBehaviorEntity(state: EntityProjectState, collision: { width: number; height: number }) {
@@ -99,7 +102,10 @@ export function buildAddon(state: EntityProjectState, options: AddonBuildOptions
   if (!modelReport.ok) {
     const tooComplex = modelReport.issues.some((i) => i.code === 'MODEL_TOO_COMPLEX');
     throw new AddonBuildError(
-      modelReport.issues.filter((i) => i.severity === 'error').map((i) => i.message).join(' '),
+      modelReport.issues
+        .filter((i) => i.severity === 'error')
+        .map((i) => i.message)
+        .join(' '),
       tooComplex ? 'MODEL_TOO_COMPLEX' : 'EXPORT_INVALID',
       modelReport,
     );
@@ -183,10 +189,7 @@ export function buildAddon(state: EntityProjectState, options: AddonBuildOptions
     }),
   );
   const name = langValue(state.displayName);
-  rp.set(
-    'texts/en_US.lang',
-    text(`entity.${state.identifier}.name=${name}\nitem.spawn_egg.entity.${state.identifier}.name=Spawn ${name}\n`),
-  );
+  rp.set('texts/en_US.lang', text(`entity.${state.identifier}.name=${name}\nitem.spawn_egg.entity.${state.identifier}.name=Spawn ${name}\n`));
   rp.set('texts/languages.json', json(['en_US']));
 
   const bp: PackFiles = new Map();

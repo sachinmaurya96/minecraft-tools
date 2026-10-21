@@ -9,7 +9,7 @@ import { isSafeArchivePath, validateAddonPacks } from './validate.js';
 import { UUID_RE } from './uuid.js';
 
 const readJson = (files: PackFiles, path: string) => JSON.parse(utf8Decode(files.get(path)!));
-const clone = (files: PackFiles) => new Map([...files].map(([k, v]) => [k, v.slice()]));
+const clone = (files: PackFiles): PackFiles => new Map([...files].map(([k, v]) => [k, v.slice()]));
 const codes = (r: { issues: { code: string; severity: string }[] }) => r.issues.filter((i) => i.severity === 'error').map((i) => i.code);
 
 describe('buildAddon', () => {
@@ -113,9 +113,18 @@ describe('atlas strategies', () => {
     expect(atlas.width).toBeLessThanOrEqual(16);
     const red = readFaceBitmap(atlas, 'c1', 'north');
     expect(getPixel(red, 0, 0)).toEqual([255, 0, 0, 255]);
-    const huge: Cube[] = [{ id: 'h', boneId: 'b', origin: [0, 0, 0], size: [64, 64, 1], color: '#fff', faces: {
-      north: { kind: 'pixels', width: 64, height: 64, rgba: bytesToBase64(createImage(64, 64, [1, 1, 1, 255]).data) },
-    } } as unknown as Cube];
+    const huge: Cube[] = [
+      {
+        id: 'h',
+        boneId: 'b',
+        origin: [0, 0, 0],
+        size: [64, 64, 1],
+        color: '#fff',
+        faces: {
+          north: { kind: 'pixels', width: 64, height: 64, rgba: bytesToBase64(createImage(64, 64, [1, 1, 1, 255]).data) },
+        },
+      } as unknown as Cube,
+    ];
     expect(() => packAtlas(huge, { maxSize: 32 })).toThrow(ModelTooComplexError);
   });
 });

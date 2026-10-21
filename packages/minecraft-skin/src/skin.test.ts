@@ -42,9 +42,7 @@ describe('validation', () => {
     expect(validateSkinPng(new Uint8Array([1, 2, 3, 4]), 'classic').report.issues[0]?.code).toBe('NOT_PNG');
     const ok = validateSkinPng(encodeRgbaPng(createTemplateSkin('slim')), 'slim');
     expect(ok.report.ok).toBe(true);
-    expect(ok.report.checks).toEqual(
-      expect.arrayContaining(['png-signature', 'png-decode-crc', 'png-color-mode', 'dimensions-64x64', 'base-layer-opaque']),
-    );
+    expect(ok.report.checks).toEqual(expect.arrayContaining(['png-signature', 'png-decode-crc', 'png-color-mode', 'dimensions-64x64', 'base-layer-opaque']));
   });
 });
 
@@ -81,9 +79,18 @@ describe('legacy 64x32 conversion', () => {
     const out = createImage(64, 64);
     out.data.set(src.data, 0);
     const copies: Array<[number, number, number, number, number, number]> = [
-      [4, 16, 16, 32, 4, 4], [8, 16, 16, 32, 4, 4], [0, 20, 24, 32, 4, 12], [4, 20, 16, 32, 4, 12],
-      [8, 20, 8, 32, 4, 12], [12, 20, 16, 32, 4, 12], [44, 16, -8, 32, 4, 4], [48, 16, -8, 32, 4, 4],
-      [40, 20, 0, 32, 4, 12], [44, 20, -8, 32, 4, 12], [48, 20, -16, 32, 4, 12], [52, 20, -8, 32, 4, 12],
+      [4, 16, 16, 32, 4, 4],
+      [8, 16, 16, 32, 4, 4],
+      [0, 20, 24, 32, 4, 12],
+      [4, 20, 16, 32, 4, 12],
+      [8, 20, 8, 32, 4, 12],
+      [12, 20, 16, 32, 4, 12],
+      [44, 16, -8, 32, 4, 4],
+      [48, 16, -8, 32, 4, 4],
+      [40, 20, 0, 32, 4, 12],
+      [44, 20, -8, 32, 4, 12],
+      [48, 20, -16, 32, 4, 12],
+      [52, 20, -8, 32, 4, 12],
     ];
     for (const [x, y, dx, dy, w, h] of copies) {
       for (let j = 0; j < h; j++) {

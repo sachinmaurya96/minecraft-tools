@@ -31,7 +31,16 @@ function SkinThumb({ image }: { image: RgbaImage }) {
     d.data.set(image.data);
     ctx.putImageData(d, 0, 0);
   }, [image]);
-  return <canvas ref={ref} width={64} height={64} className="checker border-2 border-shadow" style={{ width: 256, height: 256 }} aria-label="Resulting skin atlas preview" />;
+  return (
+    <canvas
+      ref={ref}
+      width={64}
+      height={64}
+      className="checker border-2 border-shadow"
+      style={{ width: 256, height: 256 }}
+      aria-label="Resulting skin atlas preview"
+    />
+  );
 }
 
 /**
@@ -90,7 +99,6 @@ export function PhotoProjectionDialog({
     return () => {
       alive = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, refKey]);
 
   const masks = useMemo(() => {
@@ -105,7 +113,8 @@ export function PhotoProjectionDialog({
     const front = views.front;
     if (!front) return setResult(null);
     const t = setTimeout(() => {
-      const view = <G,>(role: ImageRole, g: G) => (views[role] ? { image: views[role]!.image, guides: g, ...(masks[role] ? { mask: masks[role] } : {}) } : undefined);
+      const view = <G,>(role: ImageRole, g: G) =>
+        views[role] ? { image: views[role]!.image, guides: g, ...(masks[role] ? { mask: masks[role] } : {}) } : undefined;
       setResult(
         projectPhotosToSkin({
           model,
@@ -135,9 +144,9 @@ export function PhotoProjectionDialog({
   return (
     <Dialog open={open} onClose={onClose} title="Photo-assisted starter (no AI)" wide>
       <Callout className="mb-3">
-        Place each box over the matching body part. Colours inside a box are averaged onto that part of the skin. Parts no photo shows (sides,
-        top, bottom, and the back without a back photo) are <strong>approximated</strong> and marked in the editor. This does not recognise
-        faces or clothing; it only copies colours from where you put the boxes.
+        Place each box over the matching body part. Colours inside a box are averaged onto that part of the skin. Parts no photo shows (sides, top, bottom, and
+        the back without a back photo) are <strong>approximated</strong> and marked in the editor. This does not recognise faces or clothing; it only copies
+        colours from where you put the boxes.
       </Callout>
       {!references.some((r) => r.role === 'front') && (
         <div className="mb-4">
@@ -152,7 +161,13 @@ export function PhotoProjectionDialog({
           <div>
             <div className="mb-2 flex flex-wrap gap-1" role="tablist" aria-label="Photo view">
               {roles.map((r) => (
-                <button key={r} role="tab" aria-selected={active === r} className={cx('px-btn px-btn-sm', active === r ? 'px-btn-primary' : 'px-btn-secondary')} onClick={() => setActive(r)}>
+                <button
+                  key={r}
+                  role="tab"
+                  aria-selected={active === r}
+                  className={cx('px-btn px-btn-sm', active === r ? 'px-btn-primary' : 'px-btn-secondary')}
+                  onClick={() => setActive(r)}
+                >
                   {ROLE_LABELS[r]}
                 </button>
               ))}
@@ -211,7 +226,14 @@ export function PhotoProjectionDialog({
               )}
               <Button
                 size="sm"
-                onClick={() => setGuides({ front: defaultBodyGuides(model, 'front'), back: defaultBodyGuides(model, 'back'), left: defaultSideGuides(), right: defaultSideGuides() })}
+                onClick={() =>
+                  setGuides({
+                    front: defaultBodyGuides(model, 'front'),
+                    back: defaultBodyGuides(model, 'back'),
+                    left: defaultSideGuides(),
+                    right: defaultSideGuides(),
+                  })
+                }
               >
                 Reset boxes
               </Button>
@@ -221,7 +243,9 @@ export function PhotoProjectionDialog({
                 <SkinThumb image={result.image} />
                 <div className="min-w-56 flex-1 text-sm">
                   <p className="font-pixel mb-1">Copied from photos</p>
-                  <p className="mb-2 text-muted">{result.sampledFaces.length} faces ({[...new Set(result.sampledFaces.map((k) => PART_LABELS[k.split('.')[0] as BodyPart]))].join(', ')})</p>
+                  <p className="mb-2 text-muted">
+                    {result.sampledFaces.length} faces ({[...new Set(result.sampledFaces.map((k) => PART_LABELS[k.split('.')[0] as BodyPart]))].join(', ')})
+                  </p>
                   <p className="font-pixel mb-1 text-gold">Approximated</p>
                   <p className="mb-2 text-muted">{result.inferredFaces.length} faces (sides, tops, bottoms and anything no photo shows)</p>
                   <ul className="list-disc space-y-1 pl-5 text-muted">

@@ -1,0 +1,16 @@
+.git
+**/node_modules
+**/.venv
+**/dist
+**/data
+**/models
+**/model-cache
+**/__pycache__
+**/.pytest_cache
+**/*.tsbuildinfo
+**/.env
+**/.env.*
+!**/.env.example
+fixtures/generated
+test-results
+playwright-report

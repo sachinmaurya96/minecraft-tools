@@ -36,7 +36,12 @@ function RawMeshPreview({ glb }: { glb: ArrayBuffer }) {
   const [scene, setScene] = useState<Object3D | null>(null);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    new GLTFLoader().parse(glb, '', (g) => setScene(g.scene), (e) => setError(String((e as unknown as Error)?.message ?? e)));
+    new GLTFLoader().parse(
+      glb,
+      '',
+      (g) => setScene(g.scene),
+      (e) => setError(String((e as unknown as Error)?.message ?? e)),
+    );
   }, [glb]);
   if (error) return <Callout tone="error">Could not display the mesh: {error}</Callout>;
   if (!scene || !hasWebGL()) return null;
@@ -59,7 +64,16 @@ function CuboidPreview({ bones, cubes }: { bones: Bone[]; cubes: Cube[] }) {
     return { atlas, render: geometryToRenderModel(geo) };
   }, [bones, cubes]);
   return (
-    <EntityViewport render={built.render} atlas={built.atlas} selectedIndex={-1} onSelectIndex={() => undefined} view={{ preset: 'iso', nonce: 0 }} showGrid cubes={cubes} bones={bones} />
+    <EntityViewport
+      render={built.render}
+      atlas={built.atlas}
+      selectedIndex={-1}
+      onSelectIndex={() => undefined}
+      view={{ preset: 'iso', nonce: 0 }}
+      showGrid
+      cubes={cubes}
+      bones={bones}
+    />
   );
 }
 
@@ -180,25 +194,42 @@ export function MeshDialog({
   return (
     <Dialog open={open} onClose={onClose} title="Mesh → Minecraft cuboids" wide>
       <div className="mb-3 flex flex-wrap gap-1" role="tablist">
-        <button role="tab" aria-selected={mode === 'file'} className={cx('px-btn px-btn-sm', mode === 'file' ? 'px-btn-primary' : 'px-btn-secondary')} onClick={() => setMode('file')}>
+        <button
+          role="tab"
+          aria-selected={mode === 'file'}
+          className={cx('px-btn px-btn-sm', mode === 'file' ? 'px-btn-primary' : 'px-btn-secondary')}
+          onClick={() => setMode('file')}
+        >
           Convert a mesh file
         </button>
-        <button role="tab" aria-selected={mode === 'ai'} className={cx('px-btn px-btn-sm', mode === 'ai' ? 'px-btn-primary' : 'px-btn-secondary')} onClick={() => setMode('ai')}>
+        <button
+          role="tab"
+          aria-selected={mode === 'ai'}
+          className={cx('px-btn px-btn-sm', mode === 'ai' ? 'px-btn-primary' : 'px-btn-secondary')}
+          onClick={() => setMode('ai')}
+        >
           AI from a photo (TripoSR)
         </button>
       </div>
 
       {mode === 'file' && (
         <div className="mb-3 space-y-2 text-sm">
-          <div className="flex items-center gap-2">{meshP.provider && <ProviderStatusBadge p={meshP.provider} />} {meshP.provider?.reason}</div>
+          <div className="flex items-center gap-2">
+            {meshP.provider && <ProviderStatusBadge p={meshP.provider} />} {meshP.provider?.reason}
+          </div>
           <input type="file" accept=".glb,.obj,model/gltf-binary,text/plain" aria-label="Mesh file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
           <p className="text-xs text-muted">glTF binary (+Y up, front facing +Z) or OBJ. The result is labelled Manual (imported mesh).</p>
         </div>
       )}
       {mode === 'ai' && (
         <div className="mb-3 space-y-2 text-sm">
-          <div className="flex items-center gap-2">{aiP.provider && <ProviderStatusBadge p={aiP.provider} />} {aiP.provider?.reason}</div>
-          <Callout>TripoSR reconstructs a generic mesh from ONE photo. Other views are not used; hidden sides are guessed. The mesh is converted to cuboids before it can become an entity.</Callout>
+          <div className="flex items-center gap-2">
+            {aiP.provider && <ProviderStatusBadge p={aiP.provider} />} {aiP.provider?.reason}
+          </div>
+          <Callout>
+            TripoSR reconstructs a generic mesh from ONE photo. Other views are not used; hidden sides are guessed. The mesh is converted to cuboids before it
+            can become an entity.
+          </Callout>
           <label className="block">
             Photo
             <select className="px-input mt-1 max-w-sm" value={role} onChange={(e) => setRole(e.target.value)}>
@@ -211,7 +242,8 @@ export function MeshDialog({
           </label>
           {references.length === 0 && <p className="text-gold">Upload a reference photo first (Reference photos section).</p>}
           <label className="flex items-center gap-2">
-            <input type="checkbox" checked={removeBg} onChange={(e) => setRemoveBg(e.target.checked)} /> Remove background automatically (rembg, part of TripoSR)
+            <input type="checkbox" checked={removeBg} onChange={(e) => setRemoveBg(e.target.checked)} /> Remove background automatically (rembg, part of
+            TripoSR)
           </label>
           <Button variant="primary" disabled={!aiP.provider?.available || !references.length || busy(gen.data)} onClick={generate}>
             Generate 3D mesh with AI
@@ -240,7 +272,14 @@ export function MeshDialog({
         </label>
         <label>
           Cube budget
-          <input type="number" className="px-input mt-1 w-28" min={8} max={512} value={maxCubes} onChange={(e) => setMaxCubes(Math.max(8, Math.min(512, Number(e.target.value) || 300)))} />
+          <input
+            type="number"
+            className="px-input mt-1 w-28"
+            min={8}
+            max={512}
+            value={maxCubes}
+            onChange={(e) => setMaxCubes(Math.max(8, Math.min(512, Number(e.target.value) || 300)))}
+          />
         </label>
         {mode === 'file' ? (
           <Button variant="primary" disabled={!file || !meshP.provider?.available || busy(conv.data)} onClick={convertFile}>
@@ -262,9 +301,7 @@ export function MeshDialog({
       )}
       {model && (
         <div className="mt-3">
-          <p className="font-pixel mb-1">
-            Minecraft cuboid result: {model.cubes.length} cubes (this is what will be exported)
-          </p>
+          <p className="font-pixel mb-1">Minecraft cuboid result: {model.cubes.length} cubes (this is what will be exported)</p>
           <CuboidPreview bones={model.bones} cubes={model.cubes} />
           <Button className="mt-2" variant="primary" onClick={() => setConfirm(true)}>
             Use this model

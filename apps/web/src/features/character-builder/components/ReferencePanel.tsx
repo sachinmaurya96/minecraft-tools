@@ -135,8 +135,8 @@ export function ReferencePanel({ references, onChange }: { references: Reference
           }}
         />
         <span>
-          I have the right to use these images (and permission from anyone shown in them). They are stored privately, metadata is removed, and they
-          are deleted automatically after {hours} hours. <a href="/privacy">Privacy</a>
+          I have the right to use these images (and permission from anyone shown in them). They are stored privately, metadata is removed, and they are deleted
+          automatically after {hours} hours. <a href="/privacy">Privacy</a>
         </span>
       </label>
       <ul className="grid grid-cols-2 gap-3 xl:grid-cols-4">
@@ -156,10 +156,25 @@ export function ReferencePanel({ references, onChange }: { references: Reference
                   {ref?.isPrimary && <span className="font-pixel text-xs text-gold">Primary</span>}
                 </div>
                 <div className="flex min-h-36 items-center justify-center overflow-hidden">
-                  {slot.busy ? <Spinner label="Uploading and checking" /> : ref ? <Thumb reference={ref} /> : <p className="p-2 text-center text-xs text-muted">{ROLE_HINTS[role]}</p>}
+                  {slot.busy ? (
+                    <Spinner label="Uploading and checking" />
+                  ) : ref ? (
+                    <Thumb reference={ref} />
+                  ) : (
+                    <p className="p-2 text-center text-xs text-muted">{ROLE_HINTS[role]}</p>
+                  )}
                 </div>
-                {ref && <p className="truncate text-xs text-muted" title={ref.originalName}>{`${ref.originalName} · ${ref.width}×${ref.height}${ref.crop ? ' · cropped' : ''}`}</p>}
-                {slot.error && <p role="alert" className="mt-1 text-xs text-redstone">{slot.error}</p>}
+                {ref && (
+                  <p
+                    className="truncate text-xs text-muted"
+                    title={ref.originalName}
+                  >{`${ref.originalName} · ${ref.width}×${ref.height}${ref.crop ? ' · cropped' : ''}`}</p>
+                )}
+                {slot.error && (
+                  <p role="alert" className="mt-1 text-xs text-redstone">
+                    {slot.error}
+                  </p>
+                )}
                 {slot.warnings?.map((w) => (
                   <p key={w} className="mt-1 text-xs text-gold">
                     {w}
@@ -185,7 +200,11 @@ export function ReferencePanel({ references, onChange }: { references: Reference
                   </Button>
                   {ref && (
                     <>
-                      <Button size="sm" aria-label={`Rotate ${ROLE_LABELS[role]} 90 degrees clockwise`} onClick={() => update(role, { rotationDegrees: (((ref.rotationDegrees + 90) % 360) as Rotation), crop: undefined })}>
+                      <Button
+                        size="sm"
+                        aria-label={`Rotate ${ROLE_LABELS[role]} 90 degrees clockwise`}
+                        onClick={() => update(role, { rotationDegrees: ((ref.rotationDegrees + 90) % 360) as Rotation, crop: undefined })}
+                      >
                         ⟳
                       </Button>
                       <Button size="sm" onClick={() => setCropRole(role)}>

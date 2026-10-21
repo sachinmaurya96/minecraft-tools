@@ -36,7 +36,8 @@ export function inspectMesh(bytes: Buffer): { format: 'glb' | 'obj' } {
     if (line.startsWith('v ')) vertices++;
     else if (line.startsWith('f ')) faces++;
   }
-  if (vertices < 3 || faces < 1) throw new AppError(415, 'UNSUPPORTED_MEDIA_TYPE', 'Upload a binary glTF (.glb) or Wavefront .obj mesh with vertices and faces.');
+  if (vertices < 3 || faces < 1)
+    throw new AppError(415, 'UNSUPPORTED_MEDIA_TYPE', 'Upload a binary glTF (.glb) or Wavefront .obj mesh with vertices and faces.');
   if (faces > MAX_OBJ_FACES) throw new AppError(413, 'PAYLOAD_TOO_LARGE', `The mesh has more than ${MAX_OBJ_FACES.toLocaleString('en')} faces.`);
   return { format: 'obj' };
 }

@@ -85,8 +85,8 @@ function Footer() {
           {DISCLAIMER}
         </p>
         <p className="mb-3">
-          Minecraft is a trademark of Mojang Synergies AB. Blockwright is an independent fan-made project and uses the name only to describe
-          compatibility. All graphics on this site are original.
+          Minecraft is a trademark of Mojang Synergies AB. Blockwright is an independent fan-made project and uses the name only to describe compatibility. All
+          graphics on this site are original.
         </p>
         <nav aria-label="Footer">
           <ul className="flex flex-wrap gap-x-5 gap-y-2">

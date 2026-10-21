@@ -22,12 +22,15 @@ if (!config.AI_WORKER_TOKEN) logger.warn('AI_WORKER_TOKEN is empty: AI/geometry 
 
 const removed = await store.sweepExpired();
 await jobs.init();
-const sweep = setInterval(() => {
-  store
-    .sweepExpired()
-    .then((n) => n && logger.info({ removed: n }, 'expired records removed'))
-    .catch((err) => logger.error({ err }, 'sweep failed'));
-}, 10 * 60 * 1000);
+const sweep = setInterval(
+  () => {
+    store
+      .sweepExpired()
+      .then((n) => n && logger.info({ removed: n }, 'expired records removed'))
+      .catch((err) => logger.error({ err }, 'sweep failed'));
+  },
+  10 * 60 * 1000,
+);
 sweep.unref();
 
 const app = createApp(deps);

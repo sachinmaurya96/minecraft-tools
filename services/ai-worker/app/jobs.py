@@ -52,6 +52,7 @@ class Job:
     updated: float = field(default_factory=time.time)
     cancel_event: threading.Event = field(default_factory=threading.Event)
     proc: subprocess.Popen | None = None
+    delete_requested: bool = False
 
     def view(self) -> dict[str, Any]:
         return {
@@ -149,6 +150,7 @@ class JobRegistry:
         self.jobs: dict[str, Job] = {}
         self.lock = threading.Lock()
         self.pool = ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="job")
+        self.cleanup_expired()
 
     def submit(self, job_type: str, params: dict[str, Any], files: dict[str, bytes], runner: Runner) -> Job:
         self.cleanup_expired()
@@ -165,6 +167,8 @@ class JobRegistry:
     def _execute(self, job: Job, ctx: JobContext, runner: Runner) -> None:
         if job.cancel_event.is_set():
             job.status = "cancelled"
+            if job.delete_requested:
+                self._remove(job)
             return
         job.status = "running"
         try:
@@ -182,6 +186,8 @@ class JobRegistry:
             job.error_message = "The worker hit an internal error while processing this job."
         finally:
             job.updated = time.time()
+            if job.delete_requested:
+                self._remove(job)
 
     def get(self, job_id: str) -> Job | None:
         with self.lock:
@@ -204,6 +210,25 @@ class JobRegistry:
         p = job.dir / "outputs" / name
         return p if p.is_file() else None
 
+    def _remove(self, job: Job) -> None:
+        with self.lock:
+            self.jobs.pop(job.id, None)
+        shutil.rmtree(job.dir, ignore_errors=True)
+
+    def delete(self, job_id: str) -> None:
+        job = self.get(job_id)
+        if not job:
+            return
+        job.delete_requested = True
+        self.cancel(job_id)
+        if job.status != "running":
+            self._remove(job)
+
+    def close(self) -> None:
+        for job in list(self.jobs.values()):
+            self.cancel(job.id)
+        self.pool.shutdown(wait=False, cancel_futures=True)
+
     def cleanup_expired(self) -> None:
         now = time.time()
         with self.lock:
@@ -214,5 +239,8 @@ class JobRegistry:
             shutil.rmtree(j.dir, ignore_errors=True)
         # scratch dirs left behind by a previous process
         for d in self.root.iterdir():
-            if d.is_dir() and d.name not in self.jobs and now - d.stat().st_mtime > self.ttl_s:
-                shutil.rmtree(d, ignore_errors=True)
+            try:
+                if d.is_dir() and d.name not in self.jobs and now - d.stat().st_mtime > self.ttl_s:
+                    shutil.rmtree(d, ignore_errors=True)
+            except FileNotFoundError:
+                pass  # a completed job can delete its scratch concurrently

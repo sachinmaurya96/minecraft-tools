@@ -48,7 +48,9 @@ export function HomePage() {
             <h3 className="mb-2 text-xl text-gold">Custom 3D entity (.mcaddon)</h3>
             <ul className="list-disc space-y-1 pl-5 text-muted">
               <li>Your own cuboid model with texture, packaged as a Bedrock Edition add-on (behavior + resource pack).</li>
-              <li>Activate both packs on a world, then spawn it with its spawn egg or <code>/summon</code>.</li>
+              <li>
+                Activate both packs on a world, then spawn it with its spawn egg or <code>/summon</code>.
+              </li>
               <li>Not a Java Edition mod and not a player skin.</li>
             </ul>
           </Panel>
@@ -89,7 +91,9 @@ export function HomePage() {
               <dt className="mb-1">
                 <ProvenanceBadge label="AI-generated" />
               </dt>
-              <dd className="text-sm text-muted">Only when an AI model actually ran on the server. If the hardware is not there, the option is shown as unavailable.</dd>
+              <dd className="text-sm text-muted">
+                Only when an AI model actually ran on the server. If the hardware is not there, the option is shown as unavailable.
+              </dd>
             </div>
             <div>
               <dt className="mb-1">
@@ -111,12 +115,68 @@ const E = '#1d1d24';
 const C = '#c98877';
 const M = '#97735c';
 const HERO_PIXELS = [
-  H, H, H, H, H, H, H, H,
-  H, H, H, H, H, H, S, S,
-  H, H, H, S, S, S, S, S,
-  S, S, E, S, S, E, S, S,
-  S, S, E, S, S, E, S, S,
-  S, C, S, S, S, S, C, S,
-  S, S, S, M, M, S, S, S,
-  S, S, S, S, S, S, S, S,
+  H,
+  H,
+  H,
+  H,
+  H,
+  H,
+  H,
+  H,
+  H,
+  H,
+  H,
+  H,
+  H,
+  H,
+  S,
+  S,
+  H,
+  H,
+  H,
+  S,
+  S,
+  S,
+  S,
+  S,
+  S,
+  S,
+  E,
+  S,
+  S,
+  E,
+  S,
+  S,
+  S,
+  S,
+  E,
+  S,
+  S,
+  E,
+  S,
+  S,
+  S,
+  C,
+  S,
+  S,
+  S,
+  S,
+  C,
+  S,
+  S,
+  S,
+  S,
+  M,
+  M,
+  S,
+  S,
+  S,
+  S,
+  S,
+  S,
+  S,
+  S,
+  S,
+  S,
+  S,
 ];

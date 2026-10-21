@@ -38,7 +38,10 @@ function fromView(view: EntityProjectView) {
 function defaultNamespace(): string {
   const saved = storage.get('bw.namespace');
   if (saved && !checkEntityIdentifier(`${saved}:x`)) return saved;
-  const ns = `my_${Math.random().toString(36).slice(2, 6).replace(/[^a-z0-9]/g, 'a')}`;
+  const ns = `my_${Math.random()
+    .toString(36)
+    .slice(2, 6)
+    .replace(/[^a-z0-9]/g, 'a')}`;
   storage.set('bw.namespace', ns);
   return ns;
 }
@@ -168,14 +171,19 @@ export function EntityWorkspace() {
   if (phase === 'choose' || phase === 'restore') {
     return (
       <div className="mx-auto max-w-5xl px-4 py-8">
-        <PageMeta title="New custom entity" description="Build a spawnable Minecraft Bedrock custom entity (.mcaddon) from templates, skins, models or photos." />
+        <PageMeta
+          title="New custom entity"
+          description="Build a spawnable Minecraft Bedrock custom entity (.mcaddon) from templates, skins, models or photos."
+        />
         <nav aria-label="Breadcrumb" className="mb-3 text-sm">
           <Link to="/tools/character-builder">Character Builder</Link> <span className="text-muted">/ Custom entity</span>
         </nav>
         <h1 className="mb-4 text-3xl">New custom entity (Bedrock)</h1>
         {phase === 'restore' && draft && (
           <Callout tone="warn" title="Your last entity is no longer on the server" className="mb-4">
-            <p className="mb-2">It may have expired or been deleted. This browser kept a draft from {new Date(draft.savedAt).toLocaleString()} (without reference photos).</p>
+            <p className="mb-2">
+              It may have expired or been deleted. This browser kept a draft from {new Date(draft.savedAt).toLocaleString()} (without reference photos).
+            </p>
             <div className="flex gap-2">
               <Button
                 variant="primary"
@@ -188,7 +196,10 @@ export function EntityWorkspace() {
                       revision: 0,
                       references: [],
                       sourceMeshArtifactId: undefined,
-                      provenance: st.provenance.origin === 'ai' ? { ...st.provenance, origin: 'import', notes: ['Restored from a local draft of an AI-assisted model.'] } : st.provenance,
+                      provenance:
+                        st.provenance.origin === 'ai'
+                          ? { ...st.provenance, origin: 'import', notes: ['Restored from a local draft of an AI-assisted model.'] }
+                          : st.provenance,
                     },
                     true,
                   );
@@ -308,13 +319,21 @@ export function EntityWorkspace() {
               <ValidationList report={built.report} hideInfo />
             </div>
           )}
-          <p className="mt-1 text-xs text-muted">The preview renders the exact geometry and texture that the export writes. Front = the side that faces you when it spawns looking at you.</p>
+          <p className="mt-1 text-xs text-muted">
+            The preview renders the exact geometry and texture that the export writes. Front = the side that faces you when it spawns looking at you.
+          </p>
         </div>
         <div className="space-y-4">
           <Panel className="p-3">
             <div className="mb-2 flex gap-1" role="tablist">
               {(['selection', 'entity', 'photos'] as const).map((t) => (
-                <button key={t} role="tab" aria-selected={tab === t} className={cx('px-btn px-btn-sm', tab === t ? 'px-btn-primary' : 'px-btn-secondary')} onClick={() => setTab(t)}>
+                <button
+                  key={t}
+                  role="tab"
+                  aria-selected={tab === t}
+                  className={cx('px-btn px-btn-sm', tab === t ? 'px-btn-primary' : 'px-btn-secondary')}
+                  onClick={() => setTab(t)}
+                >
                   {t === 'selection' ? 'Selection' : t === 'entity' ? 'Entity' : 'Photo colours'}
                 </button>
               ))}
@@ -360,7 +379,13 @@ export function EntityWorkspace() {
           const m = skinToHumanoid(result.image, 'classic');
           useEntityEditor.getState().replaceModel(m, {
             templateId: 'humanoid',
-            provenance: { origin: 'photo-assisted', providerId: 'photo-projection-v1', editedAfterGeneration: false, inferredRegions: result.inferredFaces, notes: result.warnings },
+            provenance: {
+              origin: 'photo-assisted',
+              providerId: 'photo-projection-v1',
+              editedAfterGeneration: false,
+              inferredRegions: result.inferredFaces,
+              notes: result.warnings,
+            },
           });
           setDialog(null);
         }}

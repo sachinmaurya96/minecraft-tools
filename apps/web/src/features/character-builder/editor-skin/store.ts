@@ -35,7 +35,16 @@ export interface SkinEditorState {
   showInferred: boolean;
   notice?: string;
 
-  loadProject(p: { projectId: string | null; revision: number; displayName: string; model: SkinModel; provenance: Provenance; references: ReferenceImage[]; pixels: SkinPixels; dirty?: boolean }): void;
+  loadProject(p: {
+    projectId: string | null;
+    revision: number;
+    displayName: string;
+    model: SkinModel;
+    provenance: Provenance;
+    references: ReferenceImage[];
+    pixels: SkinPixels;
+    dirty?: boolean;
+  }): void;
   setSaved(projectId: string, revision: number, savedVersion: number, provenance?: Provenance, references?: ReferenceImage[]): void;
   setSaveState(s: SaveState, message?: string): void;
   beginStroke(): void;
@@ -52,7 +61,11 @@ export interface SkinEditorState {
   setDisplayName(name: string): void;
 }
 
-const hex = (c: Rgba) => `#${c.slice(0, 3).map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+const hex = (c: Rgba) =>
+  `#${c
+    .slice(0, 3)
+    .map((v) => v.toString(16).padStart(2, '0'))
+    .join('')}`;
 
 function markEdited(p: Provenance): Provenance {
   return p.origin === 'template' || p.origin === 'blank' || p.editedAfterGeneration ? p : { ...p, editedAfterGeneration: true };
@@ -100,12 +113,19 @@ export const useSkinEditor = create<SkinEditorState>()((set, get) => ({
     })),
 
   setSaved: (projectId, revision, savedVersion, provenance, references) =>
-    set({ projectId, revision, savedVersion, saveState: 'saved', saveMessage: undefined, ...(provenance ? { provenance } : {}), ...(references ? { references } : {}) }),
+    set({
+      projectId,
+      revision,
+      savedVersion,
+      saveState: 'saved',
+      saveMessage: undefined,
+      ...(provenance ? { provenance } : {}),
+      ...(references ? { references } : {}),
+    }),
 
   setSaveState: (saveState, saveMessage) => set({ saveState, saveMessage }),
 
-  beginStroke: () =>
-    set((s) => ({ undoStack: [...s.undoStack.slice(-(MAX_UNDO - 1)), s.pixels], redoStack: [], notice: undefined })),
+  beginStroke: () => set((s) => ({ undoStack: [...s.undoStack.slice(-(MAX_UNDO - 1)), s.pixels], redoStack: [], notice: undefined })),
 
   applyTool: (points) => {
     const s = get();
@@ -155,7 +175,11 @@ export const useSkinEditor = create<SkinEditorState>()((set, get) => ({
   set: (key, value) => set({ [key]: value } as Partial<SkinEditorState>),
 
   setColor: (c) =>
-    set((s) => ({ color: c, recentColors: [hex(c), ...s.recentColors.filter((h) => h !== hex(c))].slice(0, 12), tool: s.tool === 'picker' ? 'pencil' : s.tool })),
+    set((s) => ({
+      color: c,
+      recentColors: [hex(c), ...s.recentColors.filter((h) => h !== hex(c))].slice(0, 12),
+      tool: s.tool === 'picker' ? 'pencil' : s.tool,
+    })),
 
   togglePart: (part) => set((s) => ({ hiddenParts: s.hiddenParts.includes(part) ? s.hiddenParts.filter((p) => p !== part) : [...s.hiddenParts, part] })),
 

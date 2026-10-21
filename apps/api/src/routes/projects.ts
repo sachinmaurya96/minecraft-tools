@@ -11,9 +11,7 @@ const jsonLarge = express.json({ limit: Math.ceil(LIMITS.maxProjectJsonBytes * 1
 const CreateSkinBody = z.object({
   state: z.record(z.string(), z.unknown()),
   skinPngBase64: z.string().max(400_000).optional(),
-  template: z
-    .object({ kind: z.enum(['template', 'blank']), preset: z.string().max(32).optional() })
-    .optional(),
+  template: z.object({ kind: z.enum(['template', 'blank']), preset: z.string().max(32).optional() }).optional(),
 });
 const UpdateBody = z.object({
   baseRevision: z.number().int().positive(),

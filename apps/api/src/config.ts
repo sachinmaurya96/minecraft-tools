@@ -22,7 +22,11 @@ const EnvSchema = z.object({
   MAX_QUEUED_JOBS: z.coerce.number().int().min(1).max(200).default(10),
   MAX_JOBS_PER_SESSION: z.coerce.number().int().min(1).max(50).default(2),
   JOB_TIMEOUT_S: z.coerce.number().int().min(10).max(7200).default(900),
-  PROJECT_TTL_HOURS: z.coerce.number().positive().max(24 * 30).default(24),
+  PROJECT_TTL_HOURS: z.coerce
+    .number()
+    .positive()
+    .max(24 * 30)
+    .default(24),
   AI_WORKER_URL: z.string().url().default('http://127.0.0.1:8000'),
   AI_WORKER_TOKEN: z.string().default(''),
   ENABLE_SKING: bool,
@@ -59,7 +63,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env, cwd = process.c
   return {
     ...e,
     dataDir: path.resolve(cwd, e.DATA_DIR),
-    webOrigins: e.WEB_ORIGIN.split(',').map((s) => s.trim()).filter(Boolean),
+    webOrigins: e.WEB_ORIGIN.split(',')
+      .map((s) => s.trim())
+      .filter(Boolean),
     maxImageBytes: Math.round(e.MAX_IMAGE_MB * 1024 * 1024),
     maxMeshBytes: Math.round(e.MAX_MESH_MB * 1024 * 1024),
     ttlMs: e.PROJECT_TTL_HOURS * 3600 * 1000,

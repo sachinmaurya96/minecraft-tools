@@ -141,12 +141,7 @@ export function countDifferentPixels(a: RgbaImage, b: RgbaImage): number {
   if (a.width !== b.width || a.height !== b.height) throw new RangeError('Images differ in size');
   let n = 0;
   for (let i = 0; i < a.data.length; i += 4) {
-    if (
-      a.data[i] !== b.data[i] ||
-      a.data[i + 1] !== b.data[i + 1] ||
-      a.data[i + 2] !== b.data[i + 2] ||
-      a.data[i + 3] !== b.data[i + 3]
-    ) {
+    if (a.data[i] !== b.data[i] || a.data[i + 1] !== b.data[i + 1] || a.data[i + 2] !== b.data[i + 2] || a.data[i + 3] !== b.data[i + 3]) {
       n++;
     }
   }

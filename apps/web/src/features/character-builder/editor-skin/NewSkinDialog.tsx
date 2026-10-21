@@ -1,6 +1,14 @@
 import { useState } from 'react';
 import { decodePngToRgba, type RgbaImage, type SkinModel } from '@blockwright/shared';
-import { convertLegacySkin, createBlankSkin, createTemplateSkin, createUvDebugSkin, suggestModel, TEMPLATE_PRESETS, validateSkinImage } from '@blockwright/minecraft-skin';
+import {
+  convertLegacySkin,
+  createBlankSkin,
+  createTemplateSkin,
+  createUvDebugSkin,
+  suggestModel,
+  TEMPLATE_PRESETS,
+  validateSkinImage,
+} from '@blockwright/minecraft-skin';
 import { Button, Callout, Panel } from '../../../components/ui';
 import { useProvider } from '../../../lib/useCapabilities';
 import { ProviderStatusBadge } from '../components/CapabilityList';
@@ -70,7 +78,17 @@ export function NewSkinDialogBody({ onStart }: { onStart: (s: SkinStart) => void
             </select>
           </label>
           <div className="flex flex-wrap gap-2">
-            <Button variant="primary" onClick={() => onStart({ kind: 'template', model, pixels: createTemplateSkin(model, TEMPLATE_PRESETS[preset]).data, name: `${PRESET_NAMES[preset] ?? 'My'} skin` })}>
+            <Button
+              variant="primary"
+              onClick={() =>
+                onStart({
+                  kind: 'template',
+                  model,
+                  pixels: createTemplateSkin(model, TEMPLATE_PRESETS[preset]).data,
+                  name: `${PRESET_NAMES[preset] ?? 'My'} skin`,
+                })
+              }
+            >
               Use template
             </Button>
             <Button onClick={() => onStart({ kind: 'blank', model, pixels: createBlankSkin(model).data, name: 'Blank skin' })}>Blank grey</Button>
@@ -80,7 +98,11 @@ export function NewSkinDialogBody({ onStart }: { onStart: (s: SkinStart) => void
           <h3 className="mb-1 text-lg">Import an existing skin</h3>
           <p className="mb-2 text-sm text-muted">A 64×64 PNG, or an old 64×32 skin (converted the way Minecraft does). Label: Manual.</p>
           <input type="file" accept="image/png" aria-label="Skin PNG to import" onChange={(e) => onFile(e.target.files?.[0])} className="text-sm" />
-          {importError && <p role="alert" className="mt-2 text-sm text-redstone">{importError}</p>}
+          {importError && (
+            <p role="alert" className="mt-2 text-sm text-redstone">
+              {importError}
+            </p>
+          )}
           {imported && (
             <div className="mt-2 space-y-1 text-sm text-muted">
               {imported.notes.map((n) => (
@@ -93,7 +115,10 @@ export function NewSkinDialogBody({ onStart }: { onStart: (s: SkinStart) => void
                     {i.message} {i.severity === 'error' ? '(you can fix this in the editor before exporting)' : ''}
                   </p>
                 ))}
-              <Button variant="primary" onClick={() => onStart({ kind: 'import', model, pixels: imported.image.data, name: imported.name, notes: imported.notes })}>
+              <Button
+                variant="primary"
+                onClick={() => onStart({ kind: 'import', model, pixels: imported.image.data, name: imported.name, notes: imported.notes })}
+              >
                 Open in editor
               </Button>
             </div>
@@ -102,8 +127,7 @@ export function NewSkinDialogBody({ onStart }: { onStart: (s: SkinStart) => void
         <Panel className="p-4">
           <h3 className="mb-1 text-lg">From your photos</h3>
           <p className="mb-2 text-sm text-muted">
-            Upload a front photo (back and sides optional), place guide boxes, and copy the colours onto a skin. Predictable code, no AI. Label:
-            Photo-assisted.
+            Upload a front photo (back and sides optional), place guide boxes, and copy the colours onto a skin. Predictable code, no AI. Label: Photo-assisted.
           </p>
           <Button variant="primary" onClick={() => onStart({ kind: 'photo', model, pixels: createTemplateSkin(model).data, name: 'Photo skin' })}>
             Use my photos

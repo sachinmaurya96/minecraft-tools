@@ -1,8 +1,9 @@
 import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
-import { afterEach } from 'vitest';
+import { afterEach, vi } from 'vitest';
 
 afterEach(() => cleanup());
+window.scrollTo = vi.fn();
 
 // jsdom lacks these browser APIs used by the editors
 class RO {

@@ -79,7 +79,7 @@ export async function readZip(buf: Buffer, limits: ReadZipLimits): Promise<Map<s
         stream.on('error', fail);
         stream.on('end', () => {
           const data = Buffer.concat(parts);
-          if ((crc32(data) >>> 0) !== entry.crc32) return fail(new ZipReadError(`CRC mismatch: ${name}`));
+          if (crc32(data) >>> 0 !== entry.crc32) return fail(new ZipReadError(`CRC mismatch: ${name}`));
           out.set(name, new Uint8Array(data));
           zip.readEntry();
         });

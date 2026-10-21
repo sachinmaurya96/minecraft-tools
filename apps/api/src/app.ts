@@ -123,9 +123,15 @@ export function createApp(deps: AppDeps): Express {
   if (config.SERVE_WEB_DIST) {
     const dist = path.resolve(config.SERVE_WEB_DIST);
     if (!existsSync(path.join(dist, 'index.html'))) throw new Error(`SERVE_WEB_DIST has no index.html: ${dist}`);
-    app.use(express.static(dist, { index: false, maxAge: '1h', setHeaders: (res, file) => {
-      if (file.includes(`${path.sep}assets${path.sep}`)) res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-    } }));
+    app.use(
+      express.static(dist, {
+        index: false,
+        maxAge: '1h',
+        setHeaders: (res, file) => {
+          if (file.includes(`${path.sep}assets${path.sep}`)) res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        },
+      }),
+    );
     // SPA fallback: every non-API GET renders the app; the client router shows its own 404.
     app.get(/.*/, (_req, res) => {
       res.setHeader('Cache-Control', 'no-cache');

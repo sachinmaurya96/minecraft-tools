@@ -5,7 +5,21 @@ import { Button, cx } from '../../../components/ui';
 import { FacePainterDialog } from './FacePainterDialog';
 import { useEntityEditor } from './store';
 
-function NumberField({ label, value, onChange, step = 1, min, max }: { label: string; value: number; onChange: (v: number) => void; step?: number; min?: number; max?: number }) {
+function NumberField({
+  label,
+  value,
+  onChange,
+  step = 1,
+  min,
+  max,
+}: {
+  label: string;
+  value: number;
+  onChange: (v: number) => void;
+  step?: number;
+  min?: number;
+  max?: number;
+}) {
   const [text, setText] = useState<string | null>(null);
   return (
     <label className="block text-xs text-muted">
@@ -28,7 +42,21 @@ function NumberField({ label, value, onChange, step = 1, min, max }: { label: st
   );
 }
 
-function Vec3Field({ label, value, onChange, step = 1, min, max }: { label: string; value: Vec3; onChange: (v: Vec3) => void; step?: number; min?: number; max?: number }) {
+function Vec3Field({
+  label,
+  value,
+  onChange,
+  step = 1,
+  min,
+  max,
+}: {
+  label: string;
+  value: Vec3;
+  onChange: (v: Vec3) => void;
+  step?: number;
+  min?: number;
+  max?: number;
+}) {
   return (
     <fieldset className="mb-2">
       <legend className="text-sm text-ink">{label}</legend>
@@ -62,7 +90,12 @@ export function EntitySettings() {
     <div className="space-y-2 text-sm">
       <label className="block">
         <span className="px-label">Display name (shown in game)</span>
-        <input className="px-input" value={s.displayName} maxLength={48} onChange={(e) => s.setEntity({ displayName: e.target.value.replace(/[=\n\r\t]/g, '') })} />
+        <input
+          className="px-input"
+          value={s.displayName}
+          maxLength={48}
+          onChange={(e) => s.setEntity({ displayName: e.target.value.replace(/[=\n\r\t]/g, '') })}
+        />
       </label>
       <div className="grid grid-cols-2 gap-2">
         <label className="block">
@@ -90,13 +123,25 @@ export function EntitySettings() {
       </fieldset>
       <div className="grid grid-cols-2 gap-2">
         <NumberField label="Health" value={s.behavior.health} min={1} max={200} onChange={(v) => s.setBehavior({ health: Math.round(v) })} />
-        <NumberField label="Speed (0.25 = animal)" value={s.behavior.movementSpeed} step={0.05} min={0.05} max={0.5} onChange={(v) => s.setBehavior({ movementSpeed: v })} />
+        <NumberField
+          label="Speed (0.25 = animal)"
+          value={s.behavior.movementSpeed}
+          step={0.05}
+          min={0.05}
+          max={0.5}
+          onChange={(v) => s.setBehavior({ movementSpeed: v })}
+        />
       </div>
       <div className="grid grid-cols-2 gap-2">
         {(['baseColor', 'overlayColor'] as const).map((k) => (
           <label key={k} className="block text-xs text-muted">
             Spawn egg {k === 'baseColor' ? 'base' : 'spots'}
-            <input type="color" className="mt-0.5 block h-8 w-full border-2 border-shadow bg-transparent" value={s.spawnEgg[k]} onChange={(e) => s.setEntity({ spawnEgg: { ...s.spawnEgg, [k]: e.target.value } })} />
+            <input
+              type="color"
+              className="mt-0.5 block h-8 w-full border-2 border-shadow bg-transparent"
+              value={s.spawnEgg[k]}
+              onChange={(e) => s.setEntity({ spawnEgg: { ...s.spawnEgg, [k]: e.target.value } })}
+            />
           </label>
         ))}
       </div>
@@ -122,7 +167,13 @@ function FaceRow({ cube, face, onPaint }: { cube: Cube; face: VoxelFace; onPaint
       ) : paint?.kind === 'pixels' ? (
         <span className="text-gold">painted</span>
       ) : (
-        <input type="color" aria-label={`${FACE_LABELS[face]} colour`} className="h-6 w-8 border border-shadow bg-transparent" value={color} onChange={(e) => setFace({ kind: 'color', color: e.target.value }, )} />
+        <input
+          type="color"
+          aria-label={`${FACE_LABELS[face]} colour`}
+          className="h-6 w-8 border border-shadow bg-transparent"
+          value={color}
+          onChange={(e) => setFace({ kind: 'color', color: e.target.value })}
+        />
       )}
       <Button size="sm" onClick={onPaint} aria-label={`Paint pixels on ${FACE_LABELS[face]}`}>
         Paint
@@ -133,7 +184,12 @@ function FaceRow({ cube, face, onPaint }: { cube: Cube; face: VoxelFace; onPaint
         </Button>
       )}
       {paint?.kind !== 'hidden' && (
-        <Button size="sm" onClick={() => setFace({ kind: 'hidden' })} aria-label={`Hide ${FACE_LABELS[face]}`} title="Hidden faces are not drawn (use for faces nobody can see)">
+        <Button
+          size="sm"
+          onClick={() => setFace({ kind: 'hidden' })}
+          aria-label={`Hide ${FACE_LABELS[face]}`}
+          title="Hidden faces are not drawn (use for faces nobody can see)"
+        >
           Hide
         </Button>
       )}
@@ -164,8 +220,22 @@ export function CubeInspector() {
         </select>
       </label>
       <Vec3Field label="Position (min corner, px)" value={cube.origin} step={0.5} onChange={(v) => s.updateCube(cube.id, { origin: v }, merge('origin'))} />
-      <Vec3Field label="Size (px; 16 px = 1 block)" value={cube.size} step={0.5} min={0} max={256} onChange={(v) => s.updateCube(cube.id, { size: v }, merge('size'))} />
-      <Vec3Field label="Rotation (degrees)" value={cube.rotation ?? [0, 0, 0]} step={5} min={-180} max={180} onChange={(v) => s.updateCube(cube.id, { rotation: v }, merge('rotation'))} />
+      <Vec3Field
+        label="Size (px; 16 px = 1 block)"
+        value={cube.size}
+        step={0.5}
+        min={0}
+        max={256}
+        onChange={(v) => s.updateCube(cube.id, { size: v }, merge('size'))}
+      />
+      <Vec3Field
+        label="Rotation (degrees)"
+        value={cube.rotation ?? [0, 0, 0]}
+        step={5}
+        min={-180}
+        max={180}
+        onChange={(v) => s.updateCube(cube.id, { rotation: v }, merge('rotation'))}
+      />
       <Vec3Field
         label="Rotation pivot (px)"
         value={cube.pivot ?? (cube.origin.map((o, i) => o + cube.size[i]! / 2) as Vec3)}
@@ -173,10 +243,22 @@ export function CubeInspector() {
         onChange={(v) => s.updateCube(cube.id, { pivot: v }, merge('pivot'))}
       />
       <div className="mb-2 grid grid-cols-2 gap-2">
-        <NumberField label="Inflate (px)" value={cube.inflate ?? 0} step={0.25} min={-4} max={4} onChange={(v) => s.updateCube(cube.id, { inflate: v || undefined }, merge('inflate'))} />
+        <NumberField
+          label="Inflate (px)"
+          value={cube.inflate ?? 0}
+          step={0.25}
+          min={-4}
+          max={4}
+          onChange={(v) => s.updateCube(cube.id, { inflate: v || undefined }, merge('inflate'))}
+        />
         <label className="block text-xs text-muted">
           Cube colour
-          <input type="color" className="mt-0.5 block h-8 w-full border-2 border-shadow bg-transparent" value={cube.color.slice(0, 7)} onChange={(e) => s.updateCube(cube.id, { color: e.target.value }, merge('color'))} />
+          <input
+            type="color"
+            className="mt-0.5 block h-8 w-full border-2 border-shadow bg-transparent"
+            value={cube.color.slice(0, 7)}
+            onChange={(e) => s.updateCube(cube.id, { color: e.target.value }, merge('color'))}
+          />
         </label>
       </div>
       <p className="font-pixel mb-1">Faces</p>
@@ -199,7 +281,12 @@ export function BoneInspector() {
     <div className="text-sm">
       <label className="mb-2 block">
         <span className="px-label">Bone name</span>
-        <input className={cx('px-input font-mono', !nameOk && 'border-redstone')} value={bone.name} maxLength={32} onChange={(e) => s.updateBone(bone.id, { name: e.target.value.replace(/[^A-Za-z0-9_]/g, '') }, 'name')} />
+        <input
+          className={cx('px-input font-mono', !nameOk && 'border-redstone')}
+          value={bone.name}
+          maxLength={32}
+          onChange={(e) => s.updateBone(bone.id, { name: e.target.value.replace(/[^A-Za-z0-9_]/g, '') }, 'name')}
+        />
         {!nameOk && <span className="text-xs text-redstone">Names must be unique and use letters, digits or underscores.</span>}
       </label>
       <label className="mb-2 block">
@@ -216,7 +303,14 @@ export function BoneInspector() {
         </select>
       </label>
       <Vec3Field label="Pivot (px)" value={bone.pivot} step={0.5} onChange={(v) => s.updateBone(bone.id, { pivot: v }, 'pivot')} />
-      <Vec3Field label="Rotation (degrees)" value={bone.rotation ?? [0, 0, 0]} step={5} min={-180} max={180} onChange={(v) => s.updateBone(bone.id, { rotation: v }, 'rotation')} />
+      <Vec3Field
+        label="Rotation (degrees)"
+        value={bone.rotation ?? [0, 0, 0]}
+        step={5}
+        min={-180}
+        max={180}
+        onChange={(v) => s.updateBone(bone.id, { rotation: v }, 'rotation')}
+      />
       <Button size="sm" variant="danger" disabled={s.bones.length <= 1} onClick={() => s.deleteBone(bone.id)}>
         Delete bone (cubes move to parent)
       </Button>

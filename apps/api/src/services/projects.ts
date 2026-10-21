@@ -37,9 +37,7 @@ export interface RevisionSnapshot {
   state: SkinProjectState | EntityProjectState;
 }
 
-export type ProjectView =
-  | { project: SkinProject; skinPngBase64: string }
-  | { project: EntityProject };
+export type ProjectView = { project: SkinProject; skinPngBase64: string } | { project: EntityProject };
 
 /** Tiny per-key mutex so concurrent saves of one project are serialised. */
 class KeyedLock {
@@ -48,13 +46,14 @@ class KeyedLock {
     const prev = this.tails.get(key) ?? Promise.resolve();
     let release!: () => void;
     const next = new Promise<void>((r) => (release = r));
-    this.tails.set(key, prev.then(() => next));
+    const tail = prev.then(() => next);
+    this.tails.set(key, tail);
     await prev;
     try {
       return await fn();
     } finally {
       release();
-      if (this.tails.get(key) === next) this.tails.delete(key);
+      if (this.tails.get(key) === tail) this.tails.delete(key);
     }
   }
 }
@@ -171,7 +170,13 @@ export class ProjectService {
     const meta = { id: rec.id, revision: rec.revision, createdAt: rec.createdAt, updatedAt: rec.updatedAt, expiresAt: rec.expiresAt };
     if (rec.type === 'skin') {
       const s = state as SkinProjectState;
-      const project: SkinProject = { ...s, ...(meta as SkinMeta), type: 'skin', generationMode: generationModeFor(s.provenance), skinAssetId: `${rec.id}:rev-${rec.revision}` };
+      const project: SkinProject = {
+        ...s,
+        ...(meta as SkinMeta),
+        type: 'skin',
+        generationMode: generationModeFor(s.provenance),
+        skinAssetId: `${rec.id}:rev-${rec.revision}`,
+      };
       return { project, skinPngBase64: bytesToBase64(png!) };
     }
     const s = state as EntityProjectState;
@@ -216,7 +221,10 @@ export class ProjectService {
       expiresAt: this.store.expiryFromNow(this.config.ttlMs),
     };
     await this.writeRevision(rec, state, 'Created', png);
-    await this.images.touch(ownerId, state.references.map((r) => r.temporaryAssetId));
+    await this.images.touch(
+      ownerId,
+      state.references.map((r) => r.temporaryAssetId),
+    );
     return this.view(rec, state, png);
   }
 
@@ -226,7 +234,11 @@ export class ProjectService {
     return this.view(rec, state, png);
   }
 
-  async getRevision(ownerId: string, id: unknown, revision: number): Promise<{ record: ProjectRecord; state: SkinProjectState | EntityProjectState; png?: Buffer }> {
+  async getRevision(
+    ownerId: string,
+    id: unknown,
+    revision: number,
+  ): Promise<{ record: ProjectRecord; state: SkinProjectState | EntityProjectState; png?: Buffer }> {
     const record = await this.getRecord(ownerId, id);
     if (!record.history.some((h) => h.revision === revision)) throw new AppError(404, 'NOT_FOUND', `Revision ${revision} is not available.`);
     return { record, ...(await this.readRevision(record, revision)) };
@@ -237,9 +249,14 @@ export class ProjectService {
     return this.lock.run(first.id, async () => {
       const rec = await this.getRecord(ownerId, id);
       if (rec.revision !== baseRevision) {
-        throw new AppError(409, 'REVISION_CONFLICT', `Project changed elsewhere (now at revision ${rec.revision}, you edited ${baseRevision}). Reload to continue.`, {
-          currentRevision: rec.revision,
-        });
+        throw new AppError(
+          409,
+          'REVISION_CONFLICT',
+          `Project changed elsewhere (now at revision ${rec.revision}, you edited ${baseRevision}). Reload to continue.`,
+          {
+            currentRevision: rec.revision,
+          },
+        );
       }
       const prev = await this.readRevision(rec, rec.revision);
       let state: SkinProjectState | EntityProjectState;
@@ -262,7 +279,10 @@ export class ProjectService {
       rec.updatedAt = this.store.nowIso();
       rec.expiresAt = this.store.expiryFromNow(this.config.ttlMs);
       await this.writeRevision(rec, state, label, png);
-      await this.images.touch(ownerId, state.references.map((r) => r.temporaryAssetId));
+      await this.images.touch(
+        ownerId,
+        state.references.map((r) => r.temporaryAssetId),
+      );
       return this.view(rec, state, png);
     });
   }

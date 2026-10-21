@@ -41,7 +41,9 @@ export function EntityExportPanel({ flush }: { flush: () => Promise<boolean> }) 
         });
       } catch (e) {
         const message = e instanceof AddonBuildError ? e.message : (e as Error).message;
-        setLive({ report: { ok: false, checks: ['build'], issues: [{ code: e instanceof AddonBuildError ? e.code : 'BUILD_FAILED', severity: 'error', message }] } });
+        setLive({
+          report: { ok: false, checks: ['build'], issues: [{ code: e instanceof AddonBuildError ? e.code : 'BUILD_FAILED', severity: 'error', message }] },
+        });
       }
     }, 300);
     return () => clearTimeout(t);
@@ -52,11 +54,13 @@ export function EntityExportPanel({ flush }: { flush: () => Promise<boolean> }) 
     setError(null);
     setDone(null);
     try {
-      if (!(await flush())) throw new Error('The latest changes could not be saved, so the export would not match what you see. Check the save status and try again.');
+      if (!(await flush()))
+        throw new Error('The latest changes could not be saved, so the export would not match what you see. Check the save status and try again.');
       const st = useEntityEditor.getState();
       const res = await api.exportAddon(st.projectId!, st.revision, includeRaw);
       const { blob } = await api.downloadArtifact(res.artifact.id);
-      if ((await sha256Hex(blob)) !== res.artifact.sha256) throw new Error('The downloaded add-on does not match the validated export (checksum mismatch). Please retry.');
+      if ((await sha256Hex(blob)) !== res.artifact.sha256)
+        throw new Error('The downloaded add-on does not match the validated export (checksum mismatch). Please retry.');
       // octet-stream keeps mobile browsers from renaming .mcaddon to .zip
       saveBlob(new Blob([blob], { type: 'application/octet-stream' }), res.artifact.filename);
       setDone(res);
@@ -104,9 +108,7 @@ export function EntityExportPanel({ flush }: { flush: () => Promise<boolean> }) 
       </Button>
       {done && (
         <Callout tone="ok" className="mt-3" title={`Downloaded ${done.artifact.filename}`}>
-          <p className="mb-1">
-            Server checks passed ({done.validation.checks.length}). Structurally validated; in-game behaviour still needs your test.
-          </p>
+          <p className="mb-1">Server checks passed ({done.validation.checks.length}). Structurally validated; in-game behaviour still needs your test.</p>
           <details>
             <summary className="cursor-pointer">Archive contents</summary>
             <ul className="mt-1 font-mono text-xs">
@@ -133,8 +135,8 @@ export function EntityExportPanel({ flush }: { flush: () => Promise<boolean> }) 
         <ol className="mt-2 list-decimal space-y-1 pl-5 text-muted">
           <li>Open the .mcaddon file with Minecraft (double-click on Windows; “Open with Minecraft” on phones). Both packs are imported.</li>
           <li>
-            Edit or create a world → <em>Behavior Packs</em> → activate “{s.displayName} (Behaviors)”. Its resource pack is a dependency and is
-            added too (check <em>Resource Packs</em>).
+            Edit or create a world → <em>Behavior Packs</em> → activate “{s.displayName} (Behaviors)”. Its resource pack is a dependency and is added too (check{' '}
+            <em>Resource Packs</em>).
           </li>
           <li>
             Turn on cheats, then type <code>/summon {s.identifier}</code>, or use the spawn egg from the creative inventory.

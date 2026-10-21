@@ -1,13 +1,6 @@
 import { z } from 'zod';
 
-export const ARTIFACT_KINDS = [
-  'skin-png',
-  'mcaddon',
-  'geo-json',
-  'entity-texture',
-  'raw-mesh',
-  'cuboid-model',
-] as const;
+export const ARTIFACT_KINDS = ['skin-png', 'mcaddon', 'geo-json', 'entity-texture', 'raw-mesh', 'cuboid-model'] as const;
 export const ArtifactKindSchema = z.enum(ARTIFACT_KINDS);
 export type ArtifactKind = z.infer<typeof ArtifactKindSchema>;
 

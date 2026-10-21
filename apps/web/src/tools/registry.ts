@@ -31,8 +31,7 @@ export const TOOLS: ToolDefinition[] = [
     id: 'character-builder',
     slug: 'character-builder',
     title: 'Character Builder',
-    summary:
-      'Turn a template, an existing skin or your reference photos into a 64×64 player skin or a spawnable custom Bedrock entity.',
+    summary: 'Turn a template, an existing skin or your reference photos into a 64×64 player skin or a spawnable custom Bedrock entity.',
     path: '/tools/character-builder',
     status: 'active',
     tags: ['skins', 'Java Edition', 'Bedrock Edition', 'add-ons', 'photos'],

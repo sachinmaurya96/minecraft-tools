@@ -85,7 +85,13 @@ export function GuideBoxEditor<K extends string>({
 
   const keys = Object.keys(boxes) as K[];
   return (
-    <div ref={wrapRef} className="relative inline-block select-none border-2 border-shadow" style={{ width: w, height: h, touchAction: 'none' }} onPointerMove={onPointerMove} onPointerUp={() => (drag.current = null)}>
+    <div
+      ref={wrapRef}
+      className="relative inline-block select-none border-2 border-shadow"
+      style={{ width: w, height: h, touchAction: 'none' }}
+      onPointerMove={onPointerMove}
+      onPointerUp={() => (drag.current = null)}
+    >
       <canvas ref={canvasRef} width={w} height={h} className="block" aria-hidden />
       {keys.map((k, i) => {
         const b = boxes[k];

@@ -1,10 +1,4 @@
-import {
-  ReportBuilder,
-  SKIN_SIZE,
-  type RgbaImage,
-  type SkinModel,
-  type ValidationReport,
-} from '@blockwright/shared';
+import { ReportBuilder, SKIN_SIZE, type RgbaImage, type SkinModel, type ValidationReport } from '@blockwright/shared';
 import { getSkinLayout, PART_LABELS, regionKey, type FaceRegion } from './layout.js';
 import { decodePngToRgba, hasPngSignature, PngDecodeError, type PngInfo } from '@blockwright/shared';
 
@@ -61,10 +55,7 @@ export function validateSkinImage(img: RgbaImage, model: SkinModel): ValidationR
   report.check('dimensions-64x64');
   if (img.width !== SKIN_SIZE || img.height !== SKIN_SIZE) {
     if (img.width === 64 && img.height === 32) {
-      report.error(
-        'LEGACY_64x32',
-        'This is a legacy 64x32 skin. Convert it to the 64x64 layout first (the importer can do this).',
-      );
+      report.error('LEGACY_64x32', 'This is a legacy 64x32 skin. Convert it to the 64x64 layout first (the importer can do this).');
     } else {
       report.error('BAD_DIMENSIONS', `Skin must be 64x64 pixels, got ${img.width}x${img.height}.`);
     }
@@ -131,10 +122,7 @@ export function validateSkinPng(bytes: Uint8Array, model: SkinModel): PngValidat
   }
   report.check('png-color-mode');
   if (decoded.info.converted) {
-    report.info(
-      'COLOR_MODE_CONVERTED',
-      `Source PNG is ${decoded.info.colorType} ${decoded.info.depth}-bit; it is converted to 8-bit RGBA on export.`,
-    );
+    report.info('COLOR_MODE_CONVERTED', `Source PNG is ${decoded.info.colorType} ${decoded.info.depth}-bit; it is converted to 8-bit RGBA on export.`);
   }
   report.merge(validateSkinImage(decoded.image, model));
   return { report: report.build(), image: decoded.image, info: decoded.info };

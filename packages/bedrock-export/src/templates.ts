@@ -81,7 +81,15 @@ export const HUMANOID_TEMPLATE: EntityTemplate = {
       ],
       cubes: [
         cube('torso', 'body', [-4, 12, -2], [8, 12, 4], shirt, undefined, 'torso'),
-        cube('head', 'head', [-4, 24, -4], [8, 8, 8], skin, { north: bitmapPaint(faceBitmap(skin, hair, '#1d1d24')), up: { kind: 'color', color: hair }, south: { kind: 'color', color: hair } }, 'head'),
+        cube(
+          'head',
+          'head',
+          [-4, 24, -4],
+          [8, 8, 8],
+          skin,
+          { north: bitmapPaint(faceBitmap(skin, hair, '#1d1d24')), up: { kind: 'color', color: hair }, south: { kind: 'color', color: hair } },
+          'head',
+        ),
         cube('right_arm', 'right_arm', [-8, 12, -2], [4, 12, 4], skin, { up: { kind: 'color', color: shirt } }, 'right arm'),
         cube('left_arm', 'left_arm', [4, 12, -2], [4, 12, 4], skin, { up: { kind: 'color', color: shirt } }, 'left arm'),
         cube('right_leg', 'right_leg', [-4, 0, -2], [4, 12, 4], '#2f4858', { down: { kind: 'color', color: '#3a2418' } }, 'right leg'),

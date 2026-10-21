@@ -101,6 +101,7 @@ export class JobManager {
   private queue: string[] = [];
   private cancelRequested = new Set<string>();
   private stopped = false;
+  private deletingOwners = new Set<string>();
   pollIntervalMs = 1000;
 
   constructor(private readonly d: JobManagerDeps) {}
@@ -128,7 +129,11 @@ export class JobManager {
     return job;
   }
 
-  private async finish(job: JobRecord, status: 'ready' | 'failed' | 'cancelled', extra: { code?: ErrorCode; message?: string; result?: Record<string, unknown>; artifactIds?: string[] } = {}) {
+  private async finish(
+    job: JobRecord,
+    status: 'ready' | 'failed' | 'cancelled',
+    extra: { code?: ErrorCode; message?: string; result?: Record<string, unknown>; artifactIds?: string[] } = {},
+  ) {
     await this.save(job, {
       status,
       progressStage: status === 'ready' ? 'Done' : status === 'cancelled' ? 'Cancelled' : 'Failed',
@@ -150,6 +155,7 @@ export class JobManager {
   }
 
   async create(ownerId: string, type: JobType, rawParams: unknown): Promise<GenerationJob> {
+    if (this.deletingOwners.has(ownerId)) throw new AppError(409, 'BAD_REQUEST', 'Your data is being deleted. Please wait.');
     const def = JOB_DEF[type];
     const params = def.params.parse(rawParams) as Record<string, unknown>;
     this.d.capabilities.invalidate();
@@ -165,6 +171,7 @@ export class JobManager {
       throw new AppError(429, 'LIMIT_EXCEEDED', 'The generation queue is full. Please try again later.');
     }
     const now = this.d.store.nowIso();
+    if (this.deletingOwners.has(ownerId)) throw new AppError(409, 'BAD_REQUEST', 'Your data is being deleted. Please wait.');
     const job: JobRecord = {
       id: this.d.store.newId('jobs'),
       ownerId,
@@ -204,6 +211,29 @@ export class JobManager {
       if (job.workerJobId) await this.d.worker.cancelJob(job.workerJobId).catch(() => undefined);
     }
     return toJobView(job);
+  }
+
+  /** Drain this owner's jobs before deleting records, so a runner cannot recreate them. */
+  async withOwnerJobsStopped<T>(ownerId: string, action: () => Promise<T>): Promise<T> {
+    if (this.deletingOwners.has(ownerId)) throw new AppError(409, 'BAD_REQUEST', 'Deletion is already in progress.');
+    this.deletingOwners.add(ownerId);
+    try {
+      const jobs = (await this.d.store.listRecords<JobRecord>('jobs', true)).filter((job) => job.ownerId === ownerId);
+      const ids = new Set(jobs.map((job) => job.id));
+      this.queue = this.queue.filter((id) => !ids.has(id));
+      for (const job of jobs) {
+        this.cancelRequested.add(job.id);
+        if (job.workerJobId) await this.d.worker.cancelJob(job.workerJobId).catch(() => undefined);
+      }
+      while ([...ids].some((id) => this.running.has(id))) await new Promise((resolve) => setTimeout(resolve, 25));
+      for (const job of jobs) {
+        if (job.workerJobId) await this.d.worker.deleteJob(job.workerJobId).catch(() => undefined);
+        this.cancelRequested.delete(job.id);
+      }
+      return await action();
+    } finally {
+      this.deletingOwners.delete(ownerId);
+    }
   }
 
   private tick(): void {
@@ -329,10 +359,15 @@ export class JobManager {
         }
       }
     } catch (err) {
-      const code: ErrorCode = err instanceof JobFailure ? err.code : err instanceof AppError ? err.code : err instanceof WorkerError ? 'WORKER_UNAVAILABLE' : 'JOB_FAILED';
+      const code: ErrorCode =
+        err instanceof JobFailure ? err.code : err instanceof AppError ? err.code : err instanceof WorkerError ? 'WORKER_UNAVAILABLE' : 'JOB_FAILED';
       const message = err instanceof Error ? err.message : 'Generation failed.';
       if (!(err instanceof JobFailure) && !(err instanceof AppError)) this.d.logger.warn({ err, jobId: job.id }, 'job failed');
       await this.finish(job, 'failed', { code, message });
+    } finally {
+      // The API now owns any validated result. Remove the worker's input/output copies.
+      if (job.workerJobId)
+        await this.d.worker.deleteJob(job.workerJobId).catch((err) => this.d.logger.warn({ err, jobId: job.id }, 'worker scratch cleanup deferred to TTL'));
     }
   }
 
@@ -386,7 +421,8 @@ export class JobManager {
       throw new JobFailure('JOB_FAILED', 'Worker returned an invalid cuboid model.');
     }
     const report = validateEntityModel(parsed);
-    if (!report.ok) throw new JobFailure(report.issues.some((i) => i.code === 'MODEL_TOO_COMPLEX') ? 'MODEL_TOO_COMPLEX' : 'JOB_FAILED', report.issues[0]!.message);
+    if (!report.ok)
+      throw new JobFailure(report.issues.some((i) => i.code === 'MODEL_TOO_COMPLEX') ? 'MODEL_TOO_COMPLEX' : 'JOB_FAILED', report.issues[0]!.message);
     try {
       packAtlas(parsed.cubes);
     } catch (err) {

@@ -2,17 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { BoxGeometry, Mesh } from 'three';
 // Deep import: skinview3d's model module builds the player geometry without any DOM/WebGL.
 import { SkinObject } from 'skinview3d/libs/model.js';
-import {
-  BODY_PARTS,
-  describePixel,
-  findRegion,
-  getPixelLookup,
-  getSkinLayout,
-  pixelInfo,
-  type BodyPart,
-  type SkinFace,
-  type SkinLayer,
-} from './layout.js';
+import { BODY_PARTS, describePixel, findRegion, getPixelLookup, getSkinLayout, pixelInfo, type BodyPart, type SkinFace, type SkinLayer } from './layout.js';
 import type { SkinModel } from '@blockwright/shared';
 
 describe('skin layout', () => {

@@ -21,14 +21,16 @@ export function sessionRoutes(deps: AppDeps): Router {
   r.delete('/sessions/current', requireSession(deps.sessions), async (req, res) => {
     const ownerId = req.session!.ownerId;
     const deleted: Record<string, number> = {};
-    for (const kind of RECORD_KINDS) {
-      deleted[kind] = 0;
-      for (const rec of await deps.store.listRecords<BaseRecord>(kind, true)) {
-        if (rec.ownerId !== ownerId) continue;
-        await deps.store.deleteRecord(kind, rec.id);
-        deleted[kind]!++;
+    await deps.jobs.withOwnerJobsStopped(ownerId, async () => {
+      for (const kind of RECORD_KINDS) {
+        deleted[kind] = 0;
+        for (const rec of await deps.store.listRecords<BaseRecord>(kind, true)) {
+          if (rec.ownerId !== ownerId) continue;
+          await deps.store.deleteRecord(kind, rec.id);
+          deleted[kind]!++;
+        }
       }
-    }
+    });
     sendData(req, res, { deleted });
   });
 

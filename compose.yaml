@@ -1,0 +1,31 @@
+services:
+  api:
+    build: .
+    ports:
+      - '127.0.0.1:4000:4000'
+    environment:
+      WEB_ORIGIN: ${WEB_ORIGIN:-http://localhost:4000}
+      AI_WORKER_URL: http://worker:8000
+      AI_WORKER_TOKEN: ${AI_WORKER_TOKEN:?Set AI_WORKER_TOKEN in your root .env}
+      ENABLE_SKING: 'false'
+      ENABLE_TRIPOSR: 'false'
+    volumes:
+      - api-data:/data
+    depends_on:
+      worker:
+        condition: service_healthy
+    restart: unless-stopped
+  worker:
+    build:
+      context: .
+      dockerfile: services/ai-worker/Dockerfile
+    environment:
+      AI_WORKER_TOKEN: ${AI_WORKER_TOKEN:?Set AI_WORKER_TOKEN in your root .env}
+      ENABLE_SKING: 'false'
+      ENABLE_TRIPOSR: 'false'
+    volumes:
+      - worker-data:/data
+    restart: unless-stopped
+volumes:
+  api-data:
+  worker-data:

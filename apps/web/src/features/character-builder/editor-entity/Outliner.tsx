@@ -17,7 +17,10 @@ export function Outliner() {
       <li key={bone.id}>
         <button
           type="button"
-          className={cx('font-pixel flex w-full items-center gap-1 px-2 py-1 text-left text-sm hover:bg-panel-2', s.selectedBoneId === bone.id && !s.selectedCubeId && 'bg-panel-2 text-gold')}
+          className={cx(
+            'font-pixel flex w-full items-center gap-1 px-2 py-1 text-left text-sm hover:bg-panel-2',
+            s.selectedBoneId === bone.id && !s.selectedCubeId && 'bg-panel-2 text-gold',
+          )}
           style={{ paddingLeft: 8 + depth * 14 }}
           onClick={() => s.select(null, bone.id)}
           aria-label={`Bone ${bone.name}`}
@@ -29,7 +32,10 @@ export function Outliner() {
             <li key={c.id}>
               <button
                 type="button"
-                className={cx('flex w-full items-center gap-2 px-2 py-1 text-left text-sm hover:bg-panel-2', s.selectedCubeId === c.id && 'bg-panel-2 text-gold')}
+                className={cx(
+                  'flex w-full items-center gap-2 px-2 py-1 text-left text-sm hover:bg-panel-2',
+                  s.selectedCubeId === c.id && 'bg-panel-2 text-gold',
+                )}
                 style={{ paddingLeft: 24 + depth * 14 }}
                 onClick={() => s.select(c.id, bone.id)}
                 aria-label={`Cube ${c.name ?? c.id}`}

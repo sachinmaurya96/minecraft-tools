@@ -36,7 +36,8 @@ export function useAutosave({
       await p;
       return true;
     } catch (e) {
-      if (e instanceof ApiError && e.code === 'NETWORK') onState('offline', 'Offline: changes are kept in this browser and will be saved when the server is reachable.');
+      if (e instanceof ApiError && e.code === 'NETWORK')
+        onState('offline', 'Offline: changes are kept in this browser and will be saved when the server is reachable.');
       else if (e instanceof ApiError && e.code === 'REVISION_CONFLICT') {
         blocked.current = true;
         onState('conflict', e.message);

@@ -156,7 +156,7 @@ export class FsStore {
         }
         if (!name.endsWith('.json')) continue;
         const id = name.slice(0, -5);
-        let expired = false;
+        let expired: boolean;
         try {
           const rec = JSON.parse(await fs.readFile(full, 'utf8')) as BaseRecord;
           expired = Date.parse(rec.expiresAt) <= this.now();

@@ -39,14 +39,7 @@ function sanitizeBoneName(name: string, used: Set<string>): string {
 }
 
 /** Natural bitmap of one face sampled from the texture (nearest texel at face texel centres). */
-function sampleFace(
-  texture: RgbaImage,
-  uv: [number, number, number, number],
-  w: number,
-  h: number,
-  scaleX: number,
-  scaleY: number,
-): RgbaImage {
+function sampleFace(texture: RgbaImage, uv: [number, number, number, number], w: number, h: number, scaleX: number, scaleY: number): RgbaImage {
   const out = createImage(w, h);
   for (let j = 0; j < h; j++) {
     for (let i = 0; i < w; i++) {

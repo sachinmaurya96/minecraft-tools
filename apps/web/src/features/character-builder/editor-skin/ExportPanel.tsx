@@ -24,7 +24,8 @@ export function ExportPanel({ flush }: { flush: () => Promise<boolean> }) {
     setError(null);
     setResult(null);
     try {
-      if (!(await flush())) throw new Error('The latest changes could not be saved, so the export would not match what you see. Check the save status and try again.');
+      if (!(await flush()))
+        throw new Error('The latest changes could not be saved, so the export would not match what you see. Check the save status and try again.');
       const st = useSkinEditor.getState();
       const { artifact, validation } = await api.exportSkin(st.projectId!, st.revision);
       const { blob } = await api.downloadArtifact(artifact.id);
@@ -55,7 +56,9 @@ export function ExportPanel({ flush }: { flush: () => Promise<boolean> }) {
       </div>
       {result && (
         <Callout tone="ok" className="mt-3" title={`Downloaded ${result.filename}`}>
-          <p>Validated on the server ({result.report.checks.length} checks). SHA-256 {result.sha256.slice(0, 16)}…</p>
+          <p>
+            Validated on the server ({result.report.checks.length} checks). SHA-256 {result.sha256.slice(0, 16)}…
+          </p>
         </Callout>
       )}
       {error && (
@@ -72,9 +75,9 @@ export function ExportPanel({ flush }: { flush: () => Promise<boolean> }) {
             {s.model === 'slim' ? ' Slim' : ' Classic'} player model (it must match this skin), browse to the PNG, then <em>Save &amp; use</em>.
           </li>
           <li>
-            <strong className="text-ink">Bedrock Edition:</strong> whether you can import a custom skin PNG depends on your device and platform;
-            where it is offered it is in the Dressing Room&apos;s classic-skin section. Menu names change between versions, so check your
-            platform. Blockwright has not verified Bedrock skin import.
+            <strong className="text-ink">Bedrock Edition:</strong> whether you can import a custom skin PNG depends on your device and platform; where it is
+            offered it is in the Dressing Room&apos;s classic-skin section. Menu names change between versions, so check your platform. Blockwright has not
+            verified Bedrock skin import.
           </li>
           <li>A skin only recolours the standard body. For a new shape, build a custom entity instead.</li>
         </ol>

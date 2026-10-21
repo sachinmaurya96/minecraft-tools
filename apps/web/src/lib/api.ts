@@ -98,8 +98,7 @@ async function rawFetch<T>(method: string, path: string, init: { json?: unknown;
 
 /** Authenticated request; if the session token is unknown/expired, start a new session once. */
 async function request<T>(method: string, path: string, init: { json?: unknown; form?: () => FormData; signal?: AbortSignal } = {}): Promise<T> {
-  const attempt = async () =>
-    rawFetch<T>(method, path, { json: init.json, form: init.form?.(), token: await getSessionToken(), signal: init.signal });
+  const attempt = async () => rawFetch<T>(method, path, { json: init.json, form: init.form?.(), token: await getSessionToken(), signal: init.signal });
   try {
     return await attempt();
   } catch (e) {
@@ -162,10 +161,16 @@ export const api = {
     request<SkinProjectView>('POST', '/v1/projects/skin', { json: { state, skinPngBase64, template } }),
   createEntityProject: (state: EntityProjectState) => request<EntityProjectView>('POST', '/v1/projects/entity', { json: { state } }),
   getProject: <V extends ProjectView = ProjectView>(id: string) => request<V>('GET', `/v1/projects/${encodeURIComponent(id)}`),
-  updateProject: <V extends ProjectView = ProjectView>(id: string, baseRevision: number, state: SkinProjectState | EntityProjectState, skinPngBase64?: string, label?: string) =>
-    request<V>('PUT', `/v1/projects/${encodeURIComponent(id)}`, { json: { baseRevision, state, skinPngBase64, label } }),
+  updateProject: <V extends ProjectView = ProjectView>(
+    id: string,
+    baseRevision: number,
+    state: SkinProjectState | EntityProjectState,
+    skinPngBase64?: string,
+    label?: string,
+  ) => request<V>('PUT', `/v1/projects/${encodeURIComponent(id)}`, { json: { baseRevision, state, skinPngBase64, label } }),
   deleteProject: (id: string) => request<{ deleted: true }>('DELETE', `/v1/projects/${encodeURIComponent(id)}`),
-  revisions: (id: string) => request<{ revisions: Array<{ revision: number; at: string; label: string }> }>('GET', `/v1/projects/${encodeURIComponent(id)}/revisions`),
+  revisions: (id: string) =>
+    request<{ revisions: Array<{ revision: number; at: string; label: string }> }>('GET', `/v1/projects/${encodeURIComponent(id)}/revisions`),
   revert: <V extends ProjectView = ProjectView>(id: string, baseRevision: number, toRevision: number) =>
     request<V>('POST', `/v1/projects/${encodeURIComponent(id)}/revert`, { json: { baseRevision, toRevision } }),
   applyResult: <V extends ProjectView = ProjectView>(id: string, baseRevision: number, artifactId: string) =>

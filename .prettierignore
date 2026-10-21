@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.venv/
+data/
+models/
+model-cache/
+fixtures/generated/
+playwright-report/
+test-results/
+package-lock.json
+uv.lock
+PLAN.md

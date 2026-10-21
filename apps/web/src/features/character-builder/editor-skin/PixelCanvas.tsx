@@ -36,7 +36,8 @@ export function PixelCanvas({ zoom }: { zoom: number }) {
     for (const r of layout) {
       const hidden = (r.layer === 'base' && !s.showBase) || (r.layer === 'overlay' && !s.showOverlay) || s.hiddenParts.includes(r.part);
       if (!hidden) continue;
-      for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) img.data[(y * SIZE + x) * 4 + 3] = Math.round(img.data[(y * SIZE + x) * 4 + 3]! * 0.12);
+      for (let y = r.y; y < r.y + r.h; y++)
+        for (let x = r.x; x < r.x + r.w; x++) img.data[(y * SIZE + x) * 4 + 3] = Math.round(img.data[(y * SIZE + x) * 4 + 3]! * 0.12);
     }
     bctx.putImageData(img, 0, 0);
     ctx.imageSmoothingEnabled = false;
@@ -88,17 +89,28 @@ export function PixelCanvas({ zoom }: { zoom: number }) {
       ctx.lineWidth = 2;
       ctx.strokeRect(mark[0] * zoom + 1, mark[1] * zoom + 1, zoom - 2, zoom - 2);
     }
-  }, [s.pixels, s.showBase, s.showOverlay, s.hiddenParts, s.showGrid, s.showGuides, s.showInferred, s.provenance.inferredRegions, layout, zoom, px, hover, cursor]);
+  }, [
+    s.pixels,
+    s.showBase,
+    s.showOverlay,
+    s.hiddenParts,
+    s.showGrid,
+    s.showGuides,
+    s.showInferred,
+    s.provenance.inferredRegions,
+    layout,
+    zoom,
+    px,
+    hover,
+    cursor,
+  ]);
 
-  const toPixel = useCallback(
-    (e: PointerEvent<HTMLCanvasElement>): [number, number] => {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const x = Math.floor(((e.clientX - rect.left) / rect.width) * SIZE);
-      const y = Math.floor(((e.clientY - rect.top) / rect.height) * SIZE);
-      return [Math.max(0, Math.min(SIZE - 1, x)), Math.max(0, Math.min(SIZE - 1, y))];
-    },
-    [],
-  );
+  const toPixel = useCallback((e: PointerEvent<HTMLCanvasElement>): [number, number] => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = Math.floor(((e.clientX - rect.left) / rect.width) * SIZE);
+    const y = Math.floor(((e.clientY - rect.top) / rect.height) * SIZE);
+    return [Math.max(0, Math.min(SIZE - 1, x)), Math.max(0, Math.min(SIZE - 1, y))];
+  }, []);
 
   const onDown = (e: PointerEvent<HTMLCanvasElement>) => {
     if (e.button !== 0) return;

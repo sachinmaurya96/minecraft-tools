@@ -15,13 +15,7 @@ export interface ResampleResult {
  * pixels are weighted by alpha. Output pixels are fully opaque where coverage > 0
  * and fully transparent where nothing usable was found.
  */
-export function resampleArea(
-  src: RgbaImage,
-  rect: Rect,
-  outW: number,
-  outH: number,
-  mask?: Uint8Array,
-): ResampleResult {
+export function resampleArea(src: RgbaImage, rect: Rect, outW: number, outH: number, mask?: Uint8Array): ResampleResult {
   const out = createImage(outW, outH);
   const coverage = new Float32Array(outW * outH);
   const sx = rect.width / outW;

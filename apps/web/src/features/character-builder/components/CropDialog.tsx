@@ -4,7 +4,17 @@ import { Button, Callout, Dialog, Spinner } from '../../../components/ui';
 import { loadReferenceRgba, rgbaToCanvas } from '../services/references';
 
 /** Drag a rectangle over the (rotated) photo to crop it. Crop is stored as metadata; the original stays on the server. */
-export function CropDialog({ reference, open, onClose, onApply }: { reference: ReferenceImage; open: boolean; onClose: () => void; onApply: (crop: CropRect | undefined) => void }) {
+export function CropDialog({
+  reference,
+  open,
+  onClose,
+  onApply,
+}: {
+  reference: ReferenceImage;
+  open: boolean;
+  onClose: () => void;
+  onApply: (crop: CropRect | undefined) => void;
+}) {
   const [img, setImg] = useState<RgbaImage | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [rect, setRect] = useState<CropRect | undefined>(reference.crop);

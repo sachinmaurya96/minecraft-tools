@@ -1,5 +1,16 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react';
-import { base64ToBytes, bytesToBase64, createImage, hexToRgba, resizeNearest, rgbaToHex, type Cube, type Rgba, type RgbaImage, type VoxelFace } from '@blockwright/shared';
+import {
+  base64ToBytes,
+  bytesToBase64,
+  createImage,
+  hexToRgba,
+  resizeNearest,
+  rgbaToHex,
+  type Cube,
+  type Rgba,
+  type RgbaImage,
+  type VoxelFace,
+} from '@blockwright/shared';
 import { FACE_LABELS, faceTexelSize } from '@blockwright/bedrock-export';
 import { Button, Callout, Dialog, cx } from '../../../components/ui';
 import { linePoints } from '../editor-skin/paint';
@@ -53,7 +64,10 @@ export function FacePainterDialog({ cube, face, onClose }: { cube: Cube; face: V
 
   const at = (e: PointerEvent<HTMLCanvasElement>): [number, number] => {
     const r = e.currentTarget.getBoundingClientRect();
-    return [Math.min(bmp.width - 1, Math.max(0, Math.floor(((e.clientX - r.left) / r.width) * bmp.width))), Math.min(bmp.height - 1, Math.max(0, Math.floor(((e.clientY - r.top) / r.height) * bmp.height)))];
+    return [
+      Math.min(bmp.width - 1, Math.max(0, Math.floor(((e.clientX - r.left) / r.width) * bmp.width))),
+      Math.min(bmp.height - 1, Math.max(0, Math.floor(((e.clientY - r.top) / r.height) * bmp.height))),
+    ];
   };
 
   function apply(points: Array<[number, number]>) {
@@ -91,7 +105,10 @@ export function FacePainterDialog({ cube, face, onClose }: { cube: Cube; face: V
     const first = bmp.data.slice(0, 4);
     const uniform = bmp.data.every((v, i) => v === first[i % 4]);
     const faces = { ...(cube.faces ?? {}) };
-    faces[face] = uniform && first[3] === 255 ? { kind: 'color', color: rgbaToHex([first[0]!, first[1]!, first[2]!, 255]) } : { kind: 'pixels', width: bmp.width, height: bmp.height, rgba: bytesToBase64(bmp.data) };
+    faces[face] =
+      uniform && first[3] === 255
+        ? { kind: 'color', color: rgbaToHex([first[0]!, first[1]!, first[2]!, 255]) }
+        : { kind: 'pixels', width: bmp.width, height: bmp.height, rgba: bytesToBase64(bmp.data) };
     useEntityEditor.getState().updateCube(cube.id, { faces });
     onClose();
   }
@@ -104,11 +121,23 @@ export function FacePainterDialog({ cube, face, onClose }: { cube: Cube; face: V
       </p>
       <div className="mb-3 flex flex-wrap items-center gap-2">
         {(['pencil', 'fill', 'picker', 'eraser'] as const).map((t) => (
-          <button key={t} type="button" className={cx('px-btn px-btn-sm', tool === t ? 'px-btn-primary' : 'px-btn-secondary')} aria-pressed={tool === t} onClick={() => setTool(t)}>
+          <button
+            key={t}
+            type="button"
+            className={cx('px-btn px-btn-sm', tool === t ? 'px-btn-primary' : 'px-btn-secondary')}
+            aria-pressed={tool === t}
+            onClick={() => setTool(t)}
+          >
             {t === 'picker' ? 'Eyedropper' : t[0]!.toUpperCase() + t.slice(1)}
           </button>
         ))}
-        <input type="color" aria-label="Paint colour" value={rgbaToHex(color, false)} onChange={(e) => setColor(hexToRgba(e.target.value))} className="h-8 w-10 border-2 border-shadow bg-transparent" />
+        <input
+          type="color"
+          aria-label="Paint colour"
+          value={rgbaToHex(color, false)}
+          onChange={(e) => setColor(hexToRgba(e.target.value))}
+          className="h-8 w-10 border-2 border-shadow bg-transparent"
+        />
         <Button size="sm" onClick={() => setBmp(createImage(bmp.width, bmp.height, color))}>
           Fill all
         </Button>

@@ -1,0 +1,52 @@
+name: Verify
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  cpu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.13.4'
+      - run: npm ci
+      - run: uv sync --frozen --project services/ai-worker
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run test:python
+      - run: npm run build
+      - run: npm run verify:exports
+      - run: npm run test:integration
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verification-artifacts
+          path: |
+            playwright-report/
+            fixtures/generated/*.png
+            fixtures/generated/*.mcaddon
+            docs/MODELS_AND_LICENSES.md
+            docs/FINAL_REPORT.md
+  containers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "AI_WORKER_TOKEN=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+      - run: |
+          docker compose up --build -d --wait
+          curl --fail http://localhost:4000/health
+          curl --fail http://localhost:4000/tools/character-builder
+      - if: always()
+        run: docker compose logs
+      - if: always()
+        run: docker compose down -v

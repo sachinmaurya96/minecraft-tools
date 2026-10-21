@@ -154,7 +154,12 @@ export class ExportService {
     const rpName = `${addon.fileBase}_RP.mcpack`;
     const bpZip = await zipFiles(addon.behaviorPack);
     const rpZip = await zipFiles(addon.resourcePack);
-    const mcaddon = await zipFiles(new Map([[bpName, bpZip], [rpName, rpZip]]));
+    const mcaddon = await zipFiles(
+      new Map([
+        [bpName, bpZip],
+        [rpName, rpZip],
+      ]),
+    );
 
     // 3) re-open the actual archive bytes and validate what a user would receive
     const report = new ReportBuilder();

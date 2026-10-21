@@ -1,6 +1,6 @@
 # Test doubles (tests only)
 
-These scripts imitate the *command-line contracts* of the official Sking
+These scripts imitate the _command-line contracts_ of the official Sking
 launcher (`SKING_DDJ_v101c/infer.py`) and TripoSR `run.py` so the worker's
 subprocess handling, validation and error paths can be tested without a GPU.
 They contain no model and produce trivial outputs. They are only referenced from

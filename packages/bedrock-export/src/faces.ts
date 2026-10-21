@@ -89,12 +89,7 @@ export function faceUvEntry(face: VoxelFace, rect: TexRect): GeoUvFace {
  * corner samples (u1, v1) and its bottom-right (u2, v2).
  */
 export function internalFaceUv(face: VoxelFace, entry: GeoUvFace): [number, number, number, number] {
-  const uv: [number, number, number, number] = [
-    entry.uv[0],
-    entry.uv[1],
-    entry.uv[0] + entry.uv_size[0],
-    entry.uv[1] + entry.uv_size[1],
-  ];
+  const uv: [number, number, number, number] = [entry.uv[0], entry.uv[1], entry.uv[0] + entry.uv_size[0], entry.uv[1] + entry.uv_size[1]];
   if (face === 'up' || face === 'down') return [uv[2], uv[3], uv[0], uv[1]];
   return uv;
 }
@@ -103,11 +98,7 @@ export function internalFaceUv(face: VoxelFace, entry: GeoUvFace): [number, numb
  * Blockbench-internal box-UV face UVs for a cube with box UV offset (u, v) and
  * integer size, transcribed from Blockbench's Cube preview controller updateUV.
  */
-export function boxUvInternal(
-  offset: readonly [number, number],
-  size: Size3,
-  mirror = false,
-): Record<VoxelFace, [number, number, number, number]> {
+export function boxUvInternal(offset: readonly [number, number], size: Size3, mirror = false): Record<VoxelFace, [number, number, number, number]> {
   const [sx, sy, sz] = size.map((s) => Math.floor(s)) as [number, number, number];
   const list: Array<{ face: VoxelFace; from: [number, number]; size: [number, number] }> = [
     { face: 'east', from: [0, sz], size: [sz, sy] },
@@ -129,12 +120,7 @@ export function boxUvInternal(
   }
   const out = {} as Record<VoxelFace, [number, number, number, number]>;
   for (const f of list) {
-    out[f.face] = [
-      f.from[0] + offset[0],
-      f.from[1] + offset[1],
-      f.from[0] + f.size[0] + offset[0],
-      f.from[1] + f.size[1] + offset[1],
-    ];
+    out[f.face] = [f.from[0] + offset[0], f.from[1] + offset[1], f.from[0] + f.size[0] + offset[0], f.from[1] + f.size[1] + offset[1]];
   }
   return out;
 }
